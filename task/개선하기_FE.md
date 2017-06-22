@@ -21,7 +21,7 @@
 
 # 학습 유닛
 - excution context의 이해 (오프라인) - 3h
-- npm (링크)
-- Object-Oriented JavaScript (링크)
-- handlebarsjs (링크)
+- [npm](https://opentutorials.org/module/2026/11854)
+- [Object-Oriented JavaScript](https://addyosmani.com/resources/essentialjsdesignpatterns/book/#modulepatternjavascript)
+- [handlebars.js](http://programmingsummaries.tistory.com/381)
 
