@@ -25,19 +25,19 @@
     - use DB명
 
   - 테이블 생성
-    - create table member(
+    - create table test(
 id varchar(10) primary key,
 name varchar(32) not null,
 password varchar(10) not null);
 
   - 데이터입력
-    - insert into member values ('carami','강경미','carami');
+    - insert into test values ('carami','강경미','carami');
   - 데이터조회
-    - select * from member;
+    - select * from test;
   - 데이터 수정
-    - update member set password = '1234';
+    - update test set password = '1234';
   - 데이터삭제
-    - delete from member where id = 'test';
+    - delete from test where id = 'test';
 
     ## mysql 에 데이터베이스와 사용자를 추가한다.
 
@@ -54,6 +54,16 @@ password varchar(10) not null);
 
     // 위에서 설정한 내용이 바로 적용되도록 한다.
     FLUSH PRIVILEGES;
+
+- 테이블 생성
+
+    CREATE  TABLE `MEMBER` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50) NULL ,
+    `email` VARCHAR(100) NULL ,
+    `passwd` VARCHAR(50) NULL ,
+    PRIMARY KEY (`id`)
+    );
 
     외부에서 접근 가능하도록 방화벽에서 3306 포트를 열어놓는다.
 
