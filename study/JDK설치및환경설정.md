@@ -4,5 +4,8 @@
   - 설치
 - 환경변수 설정
   - path
+    %JAVA_HOME%\bin
   - JAVA_HOME
+    C:\Program Files\Java\jdk1.8.0_131
   - CLASSPATH
+    .;%JAVA_HOME%\lib\tools.jar
