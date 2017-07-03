@@ -3,9 +3,11 @@
   - 사용중인 운영체제에 맞는 버젼을 다운로드 한다.
   - 설치
 - 환경변수 설정
-  - path
+  - path    
     %JAVA_HOME%\bin
-  - JAVA_HOME
+ 
+ - JAVA_HOME  
     C:\Program Files\Java\jdk1.8.0_131
-  - CLASSPATH
+  
+  - CLASSPATH  
     .;%JAVA_HOME%\lib\tools.jar
