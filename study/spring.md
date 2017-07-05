@@ -296,3 +296,48 @@ constructor-arg 는 생성자를 이용하여 주입하라는 의미다. index="
 ```
 
 id가 user3으로 등록된 Bean은 User객체로 설정된다. 해당 User객체는 id가 name인 값을 받아들여 생성자에 값을 설정하여 반환하는 것을 알 수 있다.
+
+## JUnit을 이용한 Test
+
+JUnit을 사용하기 위해서 pom.xml에 추가.
+```
+          <!-- spring test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+    </dependencies>
+```
+
+test코드 추가
+
+```
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import carami.spring.core.config.ApplicationContextConfig;
+import carami.spring.core.examples.User;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = ApplicationContextConfig.class)
+public class SpringTest {
+	@Autowired
+	User user1;
+
+	@Test
+	public void testUser(){
+		System.out.println(user1.getName());
+	}
+}
+
+```
