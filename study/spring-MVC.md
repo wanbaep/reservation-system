@@ -1,3 +1,16 @@
+1. maven 프로젝트 생성
+
+1) new - project -> maven - maven project -> next 버튼 클릭
+   -> Create a simple project 선택, use default workspace location 선택 -> next 버튼 클릭
+   -> goal id : carami (보통 도메인 이름을 거꾸로 적음)
+      Artifact id : todo (프로젝트 이름을 보통 소문자로 씀)
+      packaging : war (웹 어플리케이션 프로젝트니깐) -> finish 버튼 클릭
+2) 처음 프로젝트를 생성하면 프로젝트에 오류표시가 납니다.
+   웹 어플리케이션인데 필요한 파일이 존재하지 않기 때문입니다.
+   참고로 maven은 기본설정이 jdk 1.5 로 되어 있습니다.
+   problems 부분에서 maven - update project를 하라는 메시지가 있다면, 이클립스에서 프로젝트를 선택 후에 우측버튼을 클릭하고 maven - udpate project를 선택합니다.
+   maven 프로젝트의 설정파일은 pom.xml 입니다. 해당 파일을 다음과 같이 수정합니다.
+
 
 Spring mvc 를 사용하기 위한 pom.xml
 
@@ -81,77 +94,6 @@ Spring mvc 를 사용하기 위한 pom.xml
 </project>
 ```
 
-  src/main/webapp 폴더 아래에 WEB-INF폴더를 만들고, 그 안에 다음과 같은 web.xml 파일을 작성합니다.
-
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         id="WebApp_ID" version="2.5">
-
-    <display-name>spring-mvc</display-name>
-
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>carami.todo.config.RootApplicationContextConfig</param-value>
-    </context-param>
-    <context-param>
-        <param-name>contextClass</param-name>
-        <param-value>
-            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
-        </param-value>
-    </context-param>
-
-    <servlet>
-        <servlet-name>dispatcher</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>carami.todo.config.ServletContextConfig</param-value>
-        </init-param>
-        <init-param>
-            <param-name>contextClass</param-name>
-            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
-    <filter>
-        <filter-name>encodingFilter</filter-name>
-        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>encodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>httpMethodFilter</filter-name>
-        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>httpMethodFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-</web-app>
-
-```
-
 src/main/java 아래에 carami.todo.config 패키지를 생성합니다.
 
 ```
@@ -163,7 +105,43 @@ import org.springframework.context.annotation.Configuration;
 public class RootApplicationContextConfig {
 }
 ```
+```
+public class WebInitializer implements WebApplicationInitializer {
+    private static final String CONFIG_LOCATION = "carami.todo.config";
+    private static final String MAPPING_URL = "/";
 
+    public WebInitializer(){
+
+    }
+
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        WebApplicationContext context = getContext();
+
+
+        // encoding filter 설정
+        EnumSet<DispatcherType> dispatcherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD);
+
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        characterEncodingFilter.setForceEncoding(true);
+
+        FilterRegistration.Dynamic characterEncoding = servletContext.addFilter("characterEncoding", characterEncodingFilter);
+        characterEncoding.addMappingForUrlPatterns(dispatcherTypes, true, "/*");
+
+        // dispatchder servlet 설정
+        servletContext.addListener(new ContextLoaderListener(context));
+        ServletRegistration.Dynamic dispatcher = servletContext.addServlet("DispatcherServlet", new DispatcherServlet(context));
+        dispatcher.setLoadOnStartup(1);
+        dispatcher.addMapping(MAPPING_URL);
+    }
+    private AnnotationConfigWebApplicationContext getContext() {
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.setConfigLocation(CONFIG_LOCATION);
+        return context;
+    }
+}
+```
 ```
 package carami.todo.config;
 
@@ -299,4 +277,88 @@ Jun 24, 2017 3:04:05 PM org.springframework.web.servlet.DispatcherServlet initSe
 Jun 24, 2017 3:04:05 PM org.apache.coyote.AbstractProtocol start
 정보: Starting ProtocolHandler ["http-bio-8080"]
 
+```
+
+
+
+## XML 파일로 작성할 경우 예
+
+
+web.xml
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>springMVCExam</display-name>
+
+ <context-param>
+ 	<param-name>contextConfigLocation</param-name>
+ 	<param-value>classpath:/applicationContext.xml</param-value>
+ </context-param>
+  <listener>
+  	<listener-class>
+  		org.springframework.web.context.ContextLoaderListener
+  	</listener-class>
+  </listener>
+  <filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+  <servlet>
+  	<servlet-name>action</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  	<init-param>
+  		<param-name>contextConfigLocation</param-name>
+  		<param-value>WEB-INF/config/spring-mvc-config.xml</param-value>
+  	</init-param>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>action</servlet-name>
+  	<url-pattern>*.sku</url-pattern>
+  </servlet-mapping>
+
+
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>
+```
+
+spring-mvc-config.xml
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:component-scan base-package="kr.ac.skuniv.controller" />
+
+	<bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+   	 <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+   	 <property name="prefix" value="/jsp/"/>
+   	 <property name="suffix" value=".jsp"/>
+
+</bean>
+
+</beans>
 ```
