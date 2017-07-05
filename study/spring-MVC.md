@@ -34,6 +34,7 @@ Spring mvc 를 사용하기 위한 pom.xml
 
 		<logback.version>1.1.3</logback.version>
 		<jcl.slf4j.version>1.7.12</jcl.slf4j.version>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
 
 	</properties>
 
