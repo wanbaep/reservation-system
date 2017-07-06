@@ -312,6 +312,8 @@ public class MemberSqls {
 ```
 2-3. Member 클래스를 작성한다.
 ```
+package carami.todo.domain;
+
 public class Member {
     private long id;
     private String name;
