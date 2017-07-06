@@ -167,6 +167,11 @@ public class ServletContextConfig extends WebMvcConfigurerAdapter {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+
+    @Override
+   public void addResourceHandlers(ResourceHandlerRegistry registry) {
+       registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");  //   webapp/resources 경로를 의미
+   }
 }
 ```
 
