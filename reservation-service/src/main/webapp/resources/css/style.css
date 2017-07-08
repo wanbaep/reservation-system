@@ -1,0 +1,26 @@
+h1 {
+	background-color: #16ea16;
+	color: white;
+	text-align: center;
+	padding: 12px;
+}
+
+.col-4{
+	width: 33.33%;
+}
+
+.category-list{
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+th, td {
+	padding: 8px;
+	text-align: center;
+	border-bottom: 1px solid #ddd;
+}
