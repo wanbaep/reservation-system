@@ -42,6 +42,8 @@ public class WebInitializer implements WebApplicationInitializer {
 		ServletRegistration.Dynamic dispatcher = servletContext.addServlet("DispatcherServlet", new DispatcherServlet(context));
 		dispatcher.setLoadOnStartup(1);
 		dispatcher.addMapping(MAPPING_URL);
+			
+		
 	}
 	
 	private AnnotationConfigWebApplicationContext getContext() {
@@ -49,4 +51,5 @@ public class WebInitializer implements WebApplicationInitializer {
 		context.setConfigLocation(CONFIG_LOCATION);
 		return context;
 	}
+	
 }

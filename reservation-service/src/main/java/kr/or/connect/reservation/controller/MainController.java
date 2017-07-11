@@ -23,13 +23,10 @@ public class MainController {
 	public MainController(CategoryService service){
 		this.service = service;
 	}
-	
-	@GetMapping
-	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		List<Category> categoryList = service.getAll();
 		
-		ModelAndView view = new ModelAndView("index");
-		view.addObject("category", categoryList);
-		return view;
+	@GetMapping
+	public String mainpage(){
+		return "mainpage";
 	}
+	
 }
