@@ -1,12 +1,13 @@
 (function (window){
 
-
   $(document).ready(function(){
 
-    $('visual_img').animate({left:-338},200);
+    truncateProductList();
 
     //load categories
     getCategories();
+    getProductCount();
+    loadAllCategory();
   });
 
   function getCategories(){
@@ -15,45 +16,213 @@
       method: 'GET',
       dataType: 'json',
       success: function(response){
-        var $category_parent = $('.section_event_tab').children('ul');
+        var $category_parent = $('.section_event_tab').find('ul');
+        var $category = $('<li></li>');
+        var $anchor=$('<a></a>');
+        var $span = $('<span></span>');
 
+        //category list 삭제
         $category_parent.empty();
 
-        anchor_class = 'anchor active';
+        //'전체'에 해당하는 Category tag생성 후 append
+        $category.addClass('item');
+        //$category.data('category',0);
+        $category.attr('data-category','0');
+
+        console.log($category);
+        $anchor.addClass('anchor');
+        $anchor.addClass('active');
+
+        $span.text('전체');
+
+        $category_parent.append($category);
+        $category.append($anchor);
+        $anchor.append($span);
+
+
+        //전체 에 해당하는 tag를 생성
+      //  $category.attr('class',"item");
+      //  $category.data('category',"0");
+      //  $anchor.attr('class',"anchor active");
 
         for(var i = 0; i < response.length; i++){
-          var $category = $('<li></li>');
-          $category.attr('class',"item");
-          $category.attr('data-category',response[i].id);
+          var category = $('<li></li>');
+          var anchor=$('<a></a>');
+          var span = $('<span></span>');
 
-          var $anchor=$('<a></a>');
+          category.addClass('item');
+          category.attr('data-category',response[i].id);
 
-          $anchor.attr('class',anchor_class);
+          anchor.attr('class','anchor');
+          span.text(response[i].name);
 
-          var $span = $('<span></span>');
-          $span.html(response[i].name);
-
-          $category_parent.append($category);
-          $category.append($anchor);
-          $anchor.append($span);
-
-          anchor_class = 'anchor';
+          $category_parent.append(category);
+          category.append(anchor);
+          anchor.append(span);
         }
-        console.log($('a[class="anchor active"]').children('span').text());
+        //last element 'last' class add
+        anchor.addClass('last');
       }
     })
   }
 
-  $('.event_tab_lst').on('click','.item',function(){
+  //상품리스트 비우는 함수
+  function truncateProductList(){
+    var $first = $('.wrap_event_box > .lst_event_box:first-child');
+    var $second = $first.next();
+    $first.empty();
+    $second.empty();
+  }
+
+  $('.event_tab_lst').on('click','.item',function(event){
     //1. Category Id를 가져온다.
-    var cat_id = $(this).attr('data-category');
+    event.stopPropagation();
+    console.log(this);
+    var curId = $(this).data('category');
+    console.log("cur" + curId);
 
     //2. anchor class 변환
-    $('a[class="anchor active"]').attr('class','anchor');
+    //$('a[class="anchor active"]').attr('class','anchor');
+    console.log($(this).parents('.section_event_tab').find('.active'));
+    var selectedAnchor = $(this).parents('.section_event_tab').find('.active');
+    var preId = selectedAnchor.parents('.item').data('category');
+    selectedAnchor.removeClass('active');
+
+    console.log("pre" + preId);
+
     $(this).children('.anchor').addClass("active");
 
-    //3. 선택된 Category의 product를 하단에 받아와서 출력
 
+    //3. 선택된 Category의 product를 하단에 받아와서 출력
+    if(curId !== preId){
+      truncateProductList();
+      if(curId === 0){
+        loadAllCategory();
+      } else {
+        loadOneCategory(curId);
+      }
+    }
+  });
+
+
+
+  function loadAllCategory(){
+    var offset = $('.wrap_event_box').find('li').length;
+    var limit = 10;
+
+    $.ajax({
+      url: './api/productlist/'+limit+'/'+offset,
+      method: 'GET',
+      success: function(response){
+        //2
+        //root -> .wrap_event_box
+        //children -> .lst_evnet_box 좌우 2개
+        var $first = $('.wrap_event_box > .lst_event_box:first-child');
+        var $second = $first.next();//$('.wrap_event_box > .lst_event_box:last-child');
+
+        var parent = new Array();
+        parent[0]=$first;
+        parent[1]=$second;
+
+        for(var i = 0; i<response.length; i++){
+          var $item = $('<li class="item"></li>');
+          var $itemBook = $('<a href="#" class="item_book"></a>');
+          var $itemPreview = $('<div class="item_preview"></div>');
+          var $imgThumb = $('<img class="img_thumb">');   //alt=name, src=saveFileName+fileName
+          var $imgBorder = $('<span class="img_border"></span>');
+          var $eventTxt = $('<div class="event_txt"></div>');
+          var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
+          var $span = $('<span></span>'); //text(name);
+          var $small = $('<small class="sm"></small>'); //text(placeName)
+          var $eventTxtDsc = $('<p class="event_txt_dsc"></p>'); //text(content)
+
+//          $first.append($item);
+          parent[i%2].append($item);
+          $item.append($itemBook);
+          $itemBook.append($itemPreview).append($eventTxt);
+          $itemPreview.append($imgThumb).append($imgBorder);
+          $eventTxt.append($eventTxtTit).append($eventTxtDsc);
+          $eventTxtTit.append($span).append($small);
+
+          $imgThumb.attr('alt',response[i].name);
+          $imgThumb.attr('src',response[i].saveFileName+response[i].fileName);
+          $span.text(response[i].name);
+          $small.text(response[i].placeName);
+          $eventTxtDsc.text(response[i].content);
+        }
+      }
+    })
+    //1
+  }
+
+  function loadOneCategory(categoryId){
+    var offset = $('.wrap_event_box').find('li').length;
+    var limit = 10;
+    $.ajax({
+      url: './api/productlist/'+limit+'/'+offset+'/'+categoryId,
+      method: 'GET',
+      success: function(response){
+        //2
+        var $first = $('.wrap_event_box > .lst_event_box:first-child');
+        var $second = $first.next();//$('.wrap_event_box > .lst_event_box:last-child');
+
+        var parent = new Array();
+        parent[0]=$first;
+        parent[1]=$second;
+
+        for(var i = 0; i<response.length; i++){
+          var $item = $('<li class="item"></li>');
+          var $itemBook = $('<a href="#" class="item_book"></a>');
+          var $itemPreview = $('<div class="item_preview"></div>');
+          var $imgThumb = $('<img class="img_thumb">');   //alt=name, src=saveFileName+fileName
+          var $imgBorder = $('<span class="img_border"></span>');
+          var $eventTxt = $('<div class="event_txt"></div>');
+          var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
+          var $span = $('<span></span>'); //text(name);
+          var $small = $('<small class="sm"></small>'); //text(placeName)
+          var $eventTxtDsc = $('<p class="event_txt_dsc"></p>'); //text(content)
+
+//          $first.append($item);
+          parent[i%2].append($item);
+          $item.append($itemBook);
+          $itemBook.append($itemPreview).append($eventTxt);
+          $itemPreview.append($imgThumb).append($imgBorder);
+          $eventTxt.append($eventTxtTit).append($eventTxtDsc);
+          $eventTxtTit.append($span).append($small);
+
+          $imgThumb.attr('alt',response[i].name);
+          $imgThumb.attr('src',response[i].saveFileName+response[i].fileName);
+          $span.text(response[i].name);
+          $small.text(response[i].placeName);
+          $eventTxtDsc.text(response[i].content);
+        }
+
+      }
+    })
+    //1
+  }
+
+  function getProductCount(){
+    $.ajax({
+      url: './api/productlist/count/0',
+      method: 'GET',
+      success: function(response){
+        var str = response + "개";
+        $('.event_lst_txt > .pink').text(str);
+      }
+    })
+  }
+
+  //더보기 버튼 클릭 시 동작
+  $('.more > .btn').on('click',function(){
+    console.log($('.section_event_tab').find('.active').parents('.item').data('category'));
+    var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
+
+    if(selectedId === 0){
+      loadAllCategory();
+    } else {
+      loadOneCategory(selectedId);
+    }
   });
 
   //console.log($('.visual_img').children('li').length);

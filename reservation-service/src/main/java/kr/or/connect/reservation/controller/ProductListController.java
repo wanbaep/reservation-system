@@ -18,12 +18,12 @@ public class ProductListController {
 	@Autowired
 	ProductListService	productListService;
 	
-	@GetMapping("/allcategories/{limit}/{offset}")
+	@GetMapping("/{limit}/{offset}")
 	public Collection<ProductList> selectAll(@PathVariable("limit") int limit, @PathVariable("offset") int offset){
 		return productListService.getAll(limit, offset);
 	}
 	
-	@GetMapping("/category/{limit}/{offset}/{categoryId}")
+	@GetMapping("/{limit}/{offset}/{categoryId}")
 	public Collection<ProductList> selectByCategory(@PathVariable("limit") int limit, @PathVariable("offset") int offset, @PathVariable("categoryId") int categoryId){
 		return productListService.getAllByCategory(limit, offset, categoryId);
 	}
