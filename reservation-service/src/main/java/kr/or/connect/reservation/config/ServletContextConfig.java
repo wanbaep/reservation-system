@@ -19,8 +19,8 @@ public class ServletContextConfig extends WebMvcConfigurerAdapter {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		
 		viewResolver.setViewClass(JstlView.class);
-		viewResolver.setPrefix("/resources/html/");
-		viewResolver.setSuffix(".html");
+		viewResolver.setPrefix("/WEB-INF/views/");
+		viewResolver.setSuffix(".jsp");
 		return viewResolver;
 	}
 	
@@ -28,7 +28,5 @@ public class ServletContextConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry){
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-		//registry.addResourceHandler("/static/**").addResourceLocations("/WEB-INF/static/");
-		//registry.addResourceHandler("/views/**").addResourceLocations("/WEB-INF/views/");
 	}
 }

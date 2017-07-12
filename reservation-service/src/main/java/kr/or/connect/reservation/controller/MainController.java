@@ -25,8 +25,13 @@ public class MainController {
 	}
 		
 	@GetMapping
-	public String mainpage(){
+	public String mainPage(){
 		return "mainpage";
+	}
+	
+	@GetMapping("/myreservation")
+	public String myreservationPage(){
+		return "myreservation";
 	}
 	
 }

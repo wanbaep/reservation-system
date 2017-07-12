@@ -8,7 +8,89 @@
     getCategories();
     getProductCount();
     loadAllCategory();
+    //rollingBannerLeft();
+    rollingBannerRight();
   });
+
+  function rollingBannerLeft(){
+    var rollRoot = $('.visual_img').parents('.container_visual');
+    //너비설정
+    var width = $('.visual_img > .item').width();
+
+    console.log($('.visual_img > .item:first').css('background-image'));
+    console.log($('.visual_img > .item:first').css('width'));
+
+    var $item = $('<li class="item"></li>') //background-image, width 추가
+    var $atag = $('<a href="#"></a>');
+    var $imgBtmBorder = $('<span class="img_btm_border"></span>');
+    var $imgRightBorder = $('<span class="img_right_border"></span>');
+    var $imgBgGra = $('<span class="img_bg_gra"</span>');
+    var $eventTxt = $('<div class="event_txt"></div>');
+    var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
+    var $eventTxtAdr = $('<p class="event_txt_adr"></p>');
+    var $eventTxtDsc = $('<p class="event_txt_dsc"></p>');
+
+    $item.css('background-image',$('.visual_img > .item:first').css('background-image'));
+    $item.css('width',$('.visual_img > .item:first').css('width'));
+    $eventTxtTit.text($('.visual_img > .item:first > a > div > .event_txt_tit').text());
+    $eventTxtAdr.text($('.visual_img > .item:first > a > div > .event_txt_adr').text());
+    $eventTxtDsc.text($('.visual_img > .item:first > a > div > .event_txt_dsc').text());
+
+    $item.append($atag);
+    $atag.append($imgBtmBorder).append($imgRightBorder).append($imgBgGra).append($eventTxt);
+    $eventTxt.append($eventTxtTit).append($eventTxtAdr).append($eventTxtDsc);
+
+    //마지막에 맨 처음 태그 추가
+    $('.visual_img').append($item);
+
+    //맨 처음 페이지 왼쪽으로 이동
+    $('.visual_img > .item:first').animate({marginLeft:-width},{duration:2000,complete:function(){
+      $(this).remove();
+
+      rollingBannerLeft();
+    }});
+  }
+
+  function rollingBannerRight(){
+    var rollRoot = $('.visual_img').parents('.container_visual');
+    //너비설정
+    var width = $('.visual_img > .item').width();
+
+    console.log($('.visual_img > .item:last').css('background-image'));
+    console.log($('.visual_img > .item:last').css('width'));
+
+    var $item = $('<li class="item"></li>') //background-image, width 추가
+    var $atag = $('<a href="#"></a>');
+    var $imgBtmBorder = $('<span class="img_btm_border"></span>');
+    var $imgRightBorder = $('<span class="img_right_border"></span>');
+    var $imgBgGra = $('<span class="img_bg_gra"</span>');
+    var $eventTxt = $('<div class="event_txt"></div>');
+    var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
+    var $eventTxtAdr = $('<p class="event_txt_adr"></p>');
+    var $eventTxtDsc = $('<p class="event_txt_dsc"></p>');
+
+    $item.css('background-image',$('.visual_img > .item:last').css('background-image'));
+    $item.css('width',$('.visual_img > .item:last').css('width'));
+    $item.css('margin-left',-1*width);
+    $eventTxtTit.text($('.visual_img > .item:last > a > div > .event_txt_tit').text());
+    $eventTxtAdr.text($('.visual_img > .item:last > a > div > .event_txt_adr').text());
+    $eventTxtDsc.text($('.visual_img > .item:last > a > div > .event_txt_dsc').text());
+
+    $item.append($atag);
+    $atag.append($imgBtmBorder).append($imgRightBorder).append($imgBgGra).append($eventTxt);
+    $eventTxt.append($eventTxtTit).append($eventTxtAdr).append($eventTxtDsc);
+
+    //마지막에 맨 처음 태그 추가
+    $('.visual_img').prepend($item);
+
+    //맨 처음 페이지 왼쪽으로 이동
+    $('.visual_img > .item:first').animate({marginLeft:0},{duration:2000,complete:function(){
+
+      $('.visual_img > .item:last').remove();
+      rollingBannerRight();
+    }});
+  }
+
 
   function getCategories(){
     $.ajax({
