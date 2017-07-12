@@ -30,16 +30,19 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public int delete(Integer id) {
 		return categoryDao.delete(id);
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public int update(Category category) {
 		return categoryDao.update(category);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Category> getAll() {
 		return categoryDao.selectCat();
 	}

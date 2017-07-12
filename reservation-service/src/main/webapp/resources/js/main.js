@@ -1,7 +1,9 @@
 (function (window){
 
+
   $(document).ready(function(){
 
+    $('visual_img').animate({left:-338},200);
 
     //load categories
     getCategories();
@@ -52,20 +54,16 @@
 
     //3. 선택된 Category의 product를 하단에 받아와서 출력
 
-
   });
 
-  $('.btn_pre_e').unbind();
-  $('.btn_pre_e').bind('click', function(){
-    $('.visual_img').stop();
-    $('.visual_img').animate({left:-338},2000);
-  });
+  //console.log($('.visual_img').children('li').length);
 
-  $('.btn_nxt_e').unbind();
-  $('.btn_nxt_e').bind('click', function(){
-    $('.visual_img').stop();
-    $('.visual_img').animate({left:338},2000);
-  });
+  $('.btn_nxt_e').on('click',function(){
+    var cur = $('.visual_img > .item');
+    var nxt = cur.next();
 
+    $('visual_img > .item').not([cur, nxt]).css('z-index',1);
+  });
+  //$('.visual_img').animate({left:338})
 
 })(window);

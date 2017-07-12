@@ -17,7 +17,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 public class WebInitializer implements WebApplicationInitializer {
 	private static final String CONFIG_LOCATION = "kr.or.connect.reservation.config";
-	private static final String MAPPING_URL = "/";
+	private static final String MAPPING_URL = "/";	//Project이름을 '/'로 mapping한다는 의미 -> ContextPath는 Project명으로 되어있다.
 	
 	public WebInitializer(){
 		

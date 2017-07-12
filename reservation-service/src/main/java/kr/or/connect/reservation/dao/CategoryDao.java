@@ -42,8 +42,9 @@ public class CategoryDao {
 	}
 	
 	public List<Category> selectCat(){
-		Map<String, Object> params = Collections.emptyMap();
-		return jdbc.query(CategorySqls.SELECT_CAT, params, rowMapper);
+		/*Map<String, Object> params = Collections.emptyMap();
+		return jdbc.query(CategorySqls.SELECT_CAT, params, rowMapper);*/
+		return jdbc.query(CategorySqls.SELECT_CAT, rowMapper);
 	}
 	
 	public int update(Category category){
