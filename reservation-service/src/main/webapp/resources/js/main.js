@@ -1,5 +1,13 @@
 (function (window){
 
+    function startTimer(){
+
+      setInterval(function(){
+        rollingBannerLeft();
+      },2000);
+
+    }
+
   $(document).ready(function(){
 
     truncateProductList();
@@ -8,17 +16,48 @@
     getCategories();
     getProductCount();
     loadAllCategory();
+    startTimer();
+
     //rollingBannerLeft();
-    rollingBannerRight();
   });
+
+  //Scroll이 제일 하단으로 이동되는 경우 '더보기 버튼 없이' 상품 리스트 추가
+  $(window).scroll(function(){
+    if($(window).scrollTop() === $(document).height() - $(window).height()){
+
+      var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
+
+      if(selectedId === 0){
+        loadAllCategory();
+      } else {
+        loadOneCategory(selectedId);
+      }
+    }
+  })
+
+
+
+  $('.btn_pre_e').hover(function(){
+    $('.visual_img').stop();
+    //$('.visual_img > .item:first').stop();
+
+  });
+
+  $('.btn_pre_e').on('click',function(){
+    rollingBannerRight();
+
+  //  $('.visual_img > .item:first').stop();
+  //  $('.visual_img > .item:last').stop();
+  });
+
+  $('.btn_nxt_e').on('click',function(){
+    rollingBannerLeft();
+  })
 
   function rollingBannerLeft(){
     var rollRoot = $('.visual_img').parents('.container_visual');
     //너비설정
     var width = $('.visual_img > .item').width();
-
-    console.log($('.visual_img > .item:first').css('background-image'));
-    console.log($('.visual_img > .item:first').css('width'));
 
     var $item = $('<li class="item"></li>') //background-image, width 추가
     var $atag = $('<a href="#"></a>');
@@ -45,9 +84,9 @@
 
     //맨 처음 페이지 왼쪽으로 이동
     $('.visual_img > .item:first').animate({marginLeft:-width},{duration:2000,complete:function(){
+
       $(this).remove();
 
-      rollingBannerLeft();
     }});
   }
 
@@ -87,7 +126,6 @@
     $('.visual_img > .item:first').animate({marginLeft:0},{duration:2000,complete:function(){
 
       $('.visual_img > .item:last').remove();
-      rollingBannerRight();
     }});
   }
 
@@ -111,7 +149,6 @@
         //$category.data('category',0);
         $category.attr('data-category','0');
 
-        console.log($category);
         $anchor.addClass('anchor');
         $anchor.addClass('active');
 
@@ -120,12 +157,6 @@
         $category_parent.append($category);
         $category.append($anchor);
         $anchor.append($span);
-
-
-        //전체 에 해당하는 tag를 생성
-      //  $category.attr('class',"item");
-      //  $category.data('category',"0");
-      //  $anchor.attr('class',"anchor active");
 
         for(var i = 0; i < response.length; i++){
           var category = $('<li></li>');
@@ -159,21 +190,15 @@
   $('.event_tab_lst').on('click','.item',function(event){
     //1. Category Id를 가져온다.
     event.stopPropagation();
-    console.log(this);
     var curId = $(this).data('category');
-    console.log("cur" + curId);
 
     //2. anchor class 변환
     //$('a[class="anchor active"]').attr('class','anchor');
-    console.log($(this).parents('.section_event_tab').find('.active'));
     var selectedAnchor = $(this).parents('.section_event_tab').find('.active');
     var preId = selectedAnchor.parents('.item').data('category');
     selectedAnchor.removeClass('active');
 
-    console.log("pre" + preId);
-
     $(this).children('.anchor').addClass("active");
-
 
     //3. 선택된 Category의 product를 하단에 받아와서 출력
     if(curId !== preId){
@@ -297,7 +322,6 @@
 
   //더보기 버튼 클릭 시 동작
   $('.more > .btn').on('click',function(){
-    console.log($('.section_event_tab').find('.active').parents('.item').data('category'));
     var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
 
     if(selectedId === 0){
@@ -307,14 +331,5 @@
     }
   });
 
-  //console.log($('.visual_img').children('li').length);
-
-  $('.btn_nxt_e').on('click',function(){
-    var cur = $('.visual_img > .item');
-    var nxt = cur.next();
-
-    $('visual_img > .item').not([cur, nxt]).css('z-index',1);
-  });
-  //$('.visual_img').animate({left:338})
 
 })(window);
