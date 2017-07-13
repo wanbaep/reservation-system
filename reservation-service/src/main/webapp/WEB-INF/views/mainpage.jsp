@@ -57,7 +57,15 @@
                                             </div>
                                         </a>
                                     </li>
-                                    
+                                    <li class="item" style="background-image: url(http://naverbooking.phinf.naver.net/20170209_66/1486628146913la6nC_JPEG/image.jpg); width: 338px;">
+                                        <a href="#"> <span class="img_btm_border"></span> <span class="img_right_border"></span> <span class="img_bg_gra"></span>
+                                            <div class="event_txt">
+                                                <h4 class="event_txt_tit"></h4>
+                                                <p class="event_txt_adr"></p>
+                                                <p class="event_txt_dsc"></p>
+                                            </div>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                             <span class="nxt_fix"></span>
