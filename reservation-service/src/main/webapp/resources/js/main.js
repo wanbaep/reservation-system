@@ -4,9 +4,6 @@
   var INTERVAL = null;
   var TIMER = null;
 
-  //var timerTimeout = function(){
-  //  TIMER = setTimeout(rollingBannerLeft,time);
-  //}
   var timerInterval = function(){
     //setInterval의 객체를 받아와서 clearInterval을 수행해 주어야 한다.
     INTERVAL = setInterval(rollingBannerLeft,time);
@@ -23,15 +20,10 @@
 
   $(document).ready(function(){
 
-    truncateProductList();
-    //load categories
     getCategories();
     getProductCount();
     loadAllCategory();
-    //startTimer();
 
-    //rollingBannerLeft();
-    //timerInterval();
   });
 
   //Scroll이 제일 하단으로 이동되는 경우 '더보기 버튼 없이' 상품 리스트 추가
@@ -48,9 +40,7 @@
   });
 
   $('.btn_pre_e').mouseenter(function(){
-    //$('.visual_img').stop();
-    //$('.visual_img > .item:first').stop();
-    //$(this).preventDefault();
+
     if(INTERVAL != null){
       clearInterval(INTERVAL);
       INTERVAL = null;
@@ -60,15 +50,9 @@
     }
 
     TIMER = setTimeout(timerInterval(),4000);
-
-
-    //timerInterval();
-
-  //  setTimeout(timerInterval(),4000);
   });
 
   $('.btn_nxt_e').mouseenter(function(){
-    //$(this).preventDefault();
     if(INTERVAL != null){
       clearInterval(INTERVAL);
       INTERVAL = null;
@@ -77,10 +61,6 @@
       TIMER = null;
     }
     TIMER = setTimeout(timerInterval(),4000);
-    //timerInterval();
-
-    //timerInterval();
-
   });
 
   $('.btn_pre_e').on('click',function(){
@@ -94,13 +74,6 @@
     }
     rollingBannerLeft();
     timerInterval();
-  //rollingBannerRight();
-
-  //  $('.visual_img > .item:first').stop();
-  //  $('.visual_img > .item:last').stop();
-    //clearTimeout(timerInterval());
-  //  clearInterval(timerInterval());
-  //  rollingBannerRight();
 
   });
 
@@ -148,12 +121,7 @@
 
     //맨 처음 페이지 왼쪽으로 이동
     $('.visual_img > .item:first').animate({marginLeft:-width},{duration:500,complete:function(){
-
       $(this).remove();
-      //setTimeout(rollingBannerLeft,time);
-      //setTimeout(rollingBannerLeft,time);
-      //timer();
-      //rollingBannerLeft();
     }});
   }
 
@@ -203,45 +171,9 @@
       method: 'GET',
       dataType: 'json',
       success: function(response){
-        var $category_parent = $('.section_event_tab').find('ul');
-        var $category = $('<li></li>');
-        var $anchor=$('<a></a>');
-        var $span = $('<span></span>');
-
-        //category list 삭제
-        $category_parent.empty();
-
-        //'전체'에 해당하는 Category tag생성 후 append
-        $category.addClass('item');
-        //$category.data('category',0);
-        $category.attr('data-category','0');
-
-        $anchor.addClass('anchor');
-        $anchor.addClass('active');
-
-        $span.text('전체');
-
-        $category_parent.append($category);
-        $category.append($anchor);
-        $anchor.append($span);
-
-        for(var i = 0; i < response.length; i++){
-          var category = $('<li></li>');
-          var anchor=$('<a></a>');
-          var span = $('<span></span>');
-
-          category.addClass('item');
-          category.attr('data-category',response[i].id);
-
-          anchor.attr('class','anchor');
-          span.text(response[i].name);
-
-          $category_parent.append(category);
-          category.append(anchor);
-          anchor.append(span);
-        }
-        //last element 'last' class add
-        anchor.addClass('last');
+        var template = Handlebars.compile(source3);
+        var html = template(response);
+        $('.section_event_tab').find('ul').append(html);
       }
     })
   }
@@ -278,7 +210,10 @@
     }
   });
 
-
+  //Handlebars Id 설정
+  var source = $("#lst_event_box_first").html();
+  var source2 = $("#lst_event_box_second").html();
+  var source3 = $("#category_list").html();
 
   function loadAllCategory(){
     var offset = $('.wrap_event_box').find('li').length;
@@ -288,44 +223,34 @@
       url: './api/productlist/'+limit+'/'+offset,
       method: 'GET',
       success: function(response){
-        //2
-        //root -> .wrap_event_box
-        //children -> .lst_evnet_box 좌우 2개
-        var $first = $('.wrap_event_box > .lst_event_box:first-child');
-        var $second = $first.next();//$('.wrap_event_box > .lst_event_box:last-child');
 
-        var parent = new Array();
-        parent[0]=$first;
-        parent[1]=$second;
 
-        for(var i = 0; i<response.length; i++){
-          var $item = $('<li class="item"></li>');
-          var $itemBook = $('<a href="#" class="item_book"></a>');
-          var $itemPreview = $('<div class="item_preview"></div>');
-          var $imgThumb = $('<img class="img_thumb">');   //alt=name, src=saveFileName+fileName
-          var $imgBorder = $('<span class="img_border"></span>');
-          var $eventTxt = $('<div class="event_txt"></div>');
-          var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
-          var $span = $('<span></span>'); //text(name);
-          var $small = $('<small class="sm"></small>'); //text(placeName)
-          var $eventTxtDsc = $('<p class="event_txt_dsc"></p>'); //text(content)
+        var template = Handlebars.compile(source);
+        var template2 = Handlebars.compile(source2);
 
-//          $first.append($item);
-          parent[i%2].append($item);
-          $item.append($itemBook);
-          $itemBook.append($itemPreview).append($eventTxt);
-          $itemPreview.append($imgThumb).append($imgBorder);
-          $eventTxt.append($eventTxtTit).append($eventTxtDsc);
-          $eventTxtTit.append($span).append($small);
+        var data1 = [];
+        var data2 = [];
 
-          $imgThumb.attr('alt',response[i].name);
-          $imgThumb.attr('src',response[i].saveFileName+response[i].fileName);
-          $span.text(response[i].name);
-          $small.text(response[i].placeName);
-          $eventTxtDsc.text(response[i].content);
+        for(var i=0; i<response.length;i++){
+          var img = response[i].saveFileName+response[i].fileName;
+
+          if(i%2 === 0){
+            data1.push({
+              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
+            });
+          } else{
+            data2.push({
+              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
+            })
+          }
         }
+
+        var html = template(data1);
+        var html2 = template(data2);
+        $('.wrap_event_box > .lst_event_box:first-child').append(html);
+        $('.wrap_event_box > .lst_event_box:first-child').next().append(html2);
       }
-    })
+    });
     //1
   }
 
@@ -337,40 +262,30 @@
       method: 'GET',
       success: function(response){
         //2
-        var $first = $('.wrap_event_box > .lst_event_box:first-child');
-        var $second = $first.next();//$('.wrap_event_box > .lst_event_box:last-child');
+        var template = Handlebars.compile(source);
+        var template2 = Handlebars.compile(source2);
 
-        var parent = new Array();
-        parent[0]=$first;
-        parent[1]=$second;
+        var data1 = [];
+        var data2 = [];
 
-        for(var i = 0; i<response.length; i++){
-          var $item = $('<li class="item"></li>');
-          var $itemBook = $('<a href="#" class="item_book"></a>');
-          var $itemPreview = $('<div class="item_preview"></div>');
-          var $imgThumb = $('<img class="img_thumb">');   //alt=name, src=saveFileName+fileName
-          var $imgBorder = $('<span class="img_border"></span>');
-          var $eventTxt = $('<div class="event_txt"></div>');
-          var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
-          var $span = $('<span></span>'); //text(name);
-          var $small = $('<small class="sm"></small>'); //text(placeName)
-          var $eventTxtDsc = $('<p class="event_txt_dsc"></p>'); //text(content)
+        for(var i=0; i<response.length;i++){
+          var img = response[i].saveFileName+response[i].fileName;
 
-//          $first.append($item);
-          parent[i%2].append($item);
-          $item.append($itemBook);
-          $itemBook.append($itemPreview).append($eventTxt);
-          $itemPreview.append($imgThumb).append($imgBorder);
-          $eventTxt.append($eventTxtTit).append($eventTxtDsc);
-          $eventTxtTit.append($span).append($small);
-
-          $imgThumb.attr('alt',response[i].name);
-          $imgThumb.attr('src',response[i].saveFileName+response[i].fileName);
-          $span.text(response[i].name);
-          $small.text(response[i].placeName);
-          $eventTxtDsc.text(response[i].content);
+          if(i%2 === 0){
+            data1.push({
+              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
+            });
+          } else{
+            data2.push({
+              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
+            })
+          }
         }
 
+        var html = template(data1);
+        var html2 = template(data2);
+        $('.wrap_event_box > .lst_event_box:first-child').append(html);
+        $('.wrap_event_box > .lst_event_box:first-child').next().append(html2);
       }
     })
     //1
