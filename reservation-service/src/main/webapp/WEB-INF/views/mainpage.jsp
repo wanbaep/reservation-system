@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -10,8 +10,8 @@
     <link href="/resources/css/style.css" rel="stylesheet">
 </head>
 <body>
-  <script src="/resources/node_modules/handlebars/dist/handlebars.min.js"></script>
-<div id="container">
+    <script src="/resources/node_modules/handlebars/dist/handlebars.min.js"></script>
+    <div id="container">
         <div class="header">
             <header class="header_tit">
                 <h1 class="logo">
@@ -38,7 +38,7 @@
                         </div>
                         <div>
                             <div class="container_visual">
-                                <!-- [D] 이전,다음 버튼을 클릭할때마다 캐러셀 형태로 순환 됨 --->
+                                <!-- [D] 이전,다음 버튼을 클릭할때마다 캐러셀 형태로 순환 됨 -->
                                 <ul class="visual_img">
                                     <li class="item" style="background-image: url(http://naverbooking.phinf.naver.net/20170209_66/1486628146913la6nC_JPEG/image.jpg); width: 338px;">
                                         <a href="#"> <span class="img_btm_border"></span> <span class="img_right_border"></span> <span class="img_bg_gra"></span>
@@ -80,11 +80,11 @@
                         <a class="anchor active"> <span>전체</span> </a>
                     </li>
                     <script id="category_list" type="text/x-handlebars-template">
-                      {{#each this}}
-                      <li class="item" data-category="{{id}}">
+                        {{#each this}}
+                        <li class="item" data-category="{{id}}">
                           <a class="anchor {{#if @last}}last{{/if}}"> <span>{{name}}</span> </a>
-                      </li>
-                      {{/each}}
+                        </li>
+                        {{/each}}
                     </script>
                 </ul>
             </div>
@@ -93,22 +93,7 @@
                 <div class="wrap_event_box">
                     <!-- [D] lst_event_box 가 2컬럼으로 좌우로 나뉨, 더보기를 클릭할때마다 좌우 ul에 li가 추가됨 -->
                     <ul class="lst_event_box">
-                    <script id="lst_event_box_first" type="text/x-handlebars-template">
-                      {{#each this}}
-                      <li class="item">
-                          <a href="#" class="item_book">
-                              <div class="item_preview"> <img alt="{{name}}" class="img_thumb" src="{{image}}">                                    <span class="img_border"></span> </div>
-                              <div class="event_txt">
-                                  <h4 class="event_txt_tit"> <span>{{name}}</span> <small class="sm">{{placeName}}</small> </h4>
-                                  <p class="event_txt_dsc">{{content}}</p>
-                              </div>
-                          </a>
-                      </li>
-                      {{/each}}
-                  </script>
-                  </ul>
-                    <ul class="lst_event_box">
-                      <script id="lst_event_box_second" type="text/x-handlebars-template">
+                        <script id="lst_event_box_first" type="text/x-handlebars-template">
                         {{#each this}}
                         <li class="item">
                             <a href="#" class="item_book">
@@ -120,7 +105,22 @@
                             </a>
                         </li>
                         {{/each}}
-                    </script>
+                        </script>
+                    </ul>
+                    <ul class="lst_event_box">
+                        <script id="lst_event_box_second" type="text/x-handlebars-template">
+                        {{#each this}}
+                        <li class="item">
+                            <a href="#" class="item_book">
+                                <div class="item_preview"> <img alt="{{name}}" class="img_thumb" src="{{image}}">                                    <span class="img_border"></span> </div>
+                                <div class="event_txt">
+                                    <h4 class="event_txt_tit"> <span>{{name}}</span> <small class="sm">{{placeName}}</small> </h4>
+                                    <p class="event_txt_dsc">{{content}}</p>
+                                </div>
+                            </a>
+                        </li>
+                        {{/each}}
+                        </script>
                     </ul>
                     <!-- 더보기 -->
                     <div class="more">
@@ -130,17 +130,17 @@
             </div>
         </div>
     </div>
-    <footer>
-        <div class="gototop">
-            <a href="#" class="lnk_top"> <span class="lnk_top_text">TOP</span> </a>
-        </div>
-        <div class="footer">
-            <p class="dsc_footer">네이버(주)는 통신판매의 당사자가 아니며, 상품의정보, 거래조건, 이용 및 환불 등과 관련한 의무와 책임은 각 회원에게 있습니다.</p>
-            <span class="copyright">© NAVER Corp.</span>
-        </div>
-    </footer>
-    <script src="/resources/node_modules/jquery/dist/jquery.min.js"></script>
+<footer>
+    <div class="gototop">
+        <a href="#" class="lnk_top"> <span class="lnk_top_text">TOP</span> </a>
+    </div>
+    <div class="footer">
+        <p class="dsc_footer">네이버(주)는 통신판매의 당사자가 아니며, 상품의정보, 거래조건, 이용 및 환불 등과 관련한 의무와 책임은 각 회원에게 있습니다.</p>
+        <span class="copyright">© NAVER Corp.</span>
+    </div>
+</footer>
+<script src="/resources/node_modules/jquery/dist/jquery.min.js"></script>
 
-    <script src="/resources/js/main.js"></script>
+<script src="/resources/js/main.js"></script>
 </body>
 </html>

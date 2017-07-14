@@ -1,109 +1,94 @@
-
 (function (window){
-  
-  //Timer Module
-  var timerModule = (function() {
-    // privates scope
-    var interval = null;
-    var timer = null;
-    var time = 2000;
 
-    function startInterval() {
-      interval = setInterval(rollingBannerLeft,time);
-    }
-    function stopInterval() {
-      if(interval != null){
-        clearInterval(interval);
-        interval = null;
-      }
-    }
-    function startTimer() {
-      timer = setTimeout(startInterval,4000);
-    }
-    function stopTimer() {
-      if(timer != null){
-        clearTimeout(timer);
-        timer = null;
-      }
-    }
-    //public scope
-    return {
-      mouseEvent: function(){
-        stopInterval();
-        stopTimer();
-        startTimer();
-      },
-      intervalSet: startInterval,
-      clickPre: function(){
-        stopInterval();
-        stopTimer();
-        rollingBannerLeft();
-        startInterval();
-      },
-      clickNxt: function(){
-        stopInterval();
-        stopTimer();
-        rollingBannerRight();
-        startInterval();
-      }
-    };
-  })();
+  var time = 2000;
+  var INTERVAL = null;
+  var TIMER = null;
 
-  //ajax Request Module
-  var ajaxModule = (function() {
-    var aVar = {
-      ajaxUrl,
-      ajaxMethod,
-      ajaxDataType
-    }
+  var timerInterval = function(){
+    //setInterval의 객체를 받아와서 clearInterval을 수행해 주어야 한다.
+    INTERVAL = setInterval(rollingBannerLeft,time);
+  }
 
-    function doAjax(){
-      return $.ajax({
-        url: aVar.ajaxUrl,
-        method: aVar.ajaxMethod,
-        dataType: aVar.ajaxDataType
-      });
-    }
-    function resetAjaxVar(){
-      for(var i in aVar){
-        aVar[i]=null;
-      }
-    }
+  function stopInterval(){
+    clearInterval(INTERVAL);
+    INTERVAL = null;
+  }
 
-    //module pattern에서 private value로 쓰이는 값을 반환하기 위해서
-    //public 영역에서 return 해주어야 한다.
-    return {
-      cleanAjax:resetAjaxVar,
-      setting: function(pUrl, pMethod, pDataType) {
-        aVar.ajaxUrl = pUrl;
-        aVar.ajaxMethod = pMethod;
-        aVar.ajaxDataType = pDataType;
-      },
-      getAjax: doAjax
-    }
-})();
-
+  window.onload = function(){
+    timerInterval();
+  }
 
   $(document).ready(function(){
-    timerModule.intervalSet();
+
     getCategories();
     getProductCount();
     loadAllCategory();
-    
+
   });
 
-  //Mouse Event 등록
+  //Scroll이 제일 하단으로 이동되는 경우 '더보기 버튼 없이' 상품 리스트 추가
+  $(window).scroll(function(){
+    if($(window).scrollTop() === $(document).height() - $(window).height()){
+
+      var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
+      if(selectedId === 0){
+        loadAllCategory();
+      } else {
+        loadOneCategory(selectedId);
+      }
+    }
+  });
+
   $('.btn_pre_e').mouseenter(function(){
-    timerModule.mouseEvent();
+
+    if(INTERVAL != null){
+      clearInterval(INTERVAL);
+      INTERVAL = null;
+    }
+    if(TIMER != null){
+      TIMER = null;
+    }
+
+    TIMER = setTimeout(timerInterval(),4000);
   });
+
   $('.btn_nxt_e').mouseenter(function(){
-    timerModule.mouseEvent();
+    if(INTERVAL != null){
+      clearInterval(INTERVAL);
+      INTERVAL = null;
+    }
+    if(TIMER != null){
+      TIMER = null;
+    }
+    TIMER = setTimeout(timerInterval(),4000);
   });
+
   $('.btn_pre_e').on('click',function(){
-    timerModule.clickPre();
+    if(TIMER != null){
+      clearTimeout(TIMER);
+      TIMER = null;
+    }
+    if(INTERVAL != null){
+      clearInterval(INTERVAL);
+      INTERVAL = null;
+    }
+    rollingBannerLeft();
+    timerInterval();
+
   });
+
   $('.btn_nxt_e').on('click',function(){
-    timerModule.clickNxt();
+    //rollingBannerLeft();
+    if(TIMER != null){
+      clearTimeout(TIMER);
+      TIMER = null;
+    }
+    if(INTERVAL != null){
+      clearInterval(INTERVAL);
+      INTERVAL = null;
+    }
+    rollingBannerRight();
+    timerInterval();
   });
 
   function rollingBannerLeft(){
@@ -145,6 +130,9 @@
     //너비설정
     var width = $('.visual_img > .item').width();
 
+    console.log($('.visual_img > .item:last').css('background-image'));
+    console.log($('.visual_img > .item:last').css('width'));
+
     var $item = $('<li class="item"></li>') //background-image, width 추가
     var $atag = $('<a href="#"></a>');
     var $imgBtmBorder = $('<span class="img_btm_border"></span>');
@@ -176,18 +164,18 @@
     }});
   }
 
-  //Category list를 받아오는 함수
-  function getCategories(){
-    ajaxModule.setting('./categories/list','GET');
-    var res = ajaxModule.getAjax();
 
-    res.done(function(res, msg, satus){
-      //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
-      var template = Handlebars.compile(source3);
-      var html = template(res);
-      $('.section_event_tab').find('ul').append(html);
-      ajaxModule.cleanAjax();
-    });
+  function getCategories(){
+    $.ajax({
+      url: './categories/list',
+      method: 'GET',
+      dataType: 'json',
+      success: function(response){
+        var template = Handlebars.compile(source3);
+        var html = template(response);
+        $('.section_event_tab').find('ul').append(html);
+      }
+    })
   }
 
   //상품리스트 비우는 함수
@@ -230,9 +218,6 @@
   function loadAllCategory(){
     var offset = $('.wrap_event_box').find('li').length;
     var limit = 10;
-
-    var url = './api/productlist/'+limit+'/'+offset;
-
 
     $.ajax({
       url: './api/productlist/'+limit+'/'+offset,
@@ -328,17 +313,5 @@
     }
   });
 
-  //Scroll이 제일 하단으로 이동되는 경우 '더보기 버튼 없이' 상품 리스트 추가
-  $(window).scroll(function(){
-    if($(window).scrollTop() === $(document).height() - $(window).height()){
-
-      var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
-      if(selectedId === 0){
-        loadAllCategory();
-      } else {
-        loadOneCategory(selectedId);
-      }
-    }
-  });
 
 })(window);
