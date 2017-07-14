@@ -1,344 +1,321 @@
+(function(window) {
 
-(function (window){
-  
-  //Timer Module
-  var timerModule = (function() {
-    // privates scope
-    var interval = null;
-    var timer = null;
-    var time = 2000;
+    //Timer Module for carousel
+    var timerModule = (function() {
+        // privates scope
+        var carouselInterval = null;
+        var carouselTimer = null;
+        var delayTime = 2000;
 
-    function startInterval() {
-      interval = setInterval(rollingBannerLeft,time);
-    }
-    function stopInterval() {
-      if(interval != null){
-        clearInterval(interval);
-        interval = null;
-      }
-    }
-    function startTimer() {
-      timer = setTimeout(startInterval,4000);
-    }
-    function stopTimer() {
-      if(timer != null){
-        clearTimeout(timer);
-        timer = null;
-      }
-    }
-    //public scope
-    return {
-      mouseEvent: function(){
-        stopInterval();
-        stopTimer();
-        startTimer();
-      },
-      intervalSet: startInterval,
-      clickPre: function(){
-        stopInterval();
-        stopTimer();
-        rollingBannerLeft();
-        startInterval();
-      },
-      clickNxt: function(){
-        stopInterval();
-        stopTimer();
-        rollingBannerRight();
-        startInterval();
-      }
-    };
-  })();
+        function startInterval() {
+            carouselInterval = setInterval(carouselToLeft, delayTime);
+        }
+        function stopInterval() {
+            if (carouselInterval != null) {
+                clearInterval(carouselInterval);
+                carouselInterval = null;
+            }
+        }
+        function startTimer() {
+            carouselTimer = setTimeout(startInterval, delayTime);
+        }
+        function stopTimer() {
+            if (carouselTimer != null) {
+                clearTimeout(carouselTimer);
+                carouselTimer = null;
+            }
+        }
 
-  //ajax Request Module
-  var ajaxModule = (function() {
-    var aVar = {
-      ajaxUrl,
-      ajaxMethod,
-      ajaxDataType
-    }
+        //public scope
+        return {
+            mouseEvent: function() {
+                stopInterval();
+                stopTimer();
+                startTimer();
+            },
+            intervalSet: startInterval,
+            clickButton: function(whichButton){
+                stopInterval();
+                stopTimer();
+                //If whichButton 'true' then left and 'false' then right
+                whichButton ? carouselToLeft() : carouselToRight();
+            }
+        };
+    })();
 
-    function doAjax(){
-      return $.ajax({
-        url: aVar.ajaxUrl,
-        method: aVar.ajaxMethod,
-        dataType: aVar.ajaxDataType
-      });
-    }
-    function resetAjaxVar(){
-      for(var i in aVar){
-        aVar[i]=null;
-      }
-    }
-
-    //module pattern에서 private value로 쓰이는 값을 반환하기 위해서
-    //public 영역에서 return 해주어야 한다.
-    return {
-      cleanAjax:resetAjaxVar,
-      setting: function(pUrl, pMethod, pDataType) {
-        aVar.ajaxUrl = pUrl;
-        aVar.ajaxMethod = pMethod;
-        aVar.ajaxDataType = pDataType;
-      },
-      getAjax: doAjax
-    }
-})();
-
-
-  $(document).ready(function(){
-    timerModule.intervalSet();
-    getCategories();
-    getProductCount();
-    loadAllCategory();
+    $('.btn_pre_e').mouseenter(timerModule.mouseEvent.bind(this));
+    $('.btn_nxt_e').mouseenter(timerModule.mouseEvent.bind(this));
     
-  });
+    $('.btn_pre_e').on('click', timerModule.clickButton.bind(this,true));   //move to left
+    $('.btn_nxt_e').on('click', timerModule.clickButton.bind(this,false));  //move to right
 
-  //Mouse Event 등록
-  $('.btn_pre_e').mouseenter(function(){
-    timerModule.mouseEvent();
-  });
-  $('.btn_nxt_e').mouseenter(function(){
-    timerModule.mouseEvent();
-  });
-  $('.btn_pre_e').on('click',function(){
-    timerModule.clickPre();
-  });
-  $('.btn_nxt_e').on('click',function(){
-    timerModule.clickNxt();
-  });
+    function carouselToLeft() {
+        var width = $('.visual_img > li:first').width();
+        var carouselFirst = $('.visual_img > li:first').clone();
+        $('.visual_img').append(carouselFirst);
 
-  function rollingBannerLeft(){
-    var rollRoot = $('.visual_img').parents('.container_visual');
-    //너비설정
-    var width = $('.visual_img > .item').width();
-
-    var $item = $('<li class="item"></li>') //background-image, width 추가
-    var $atag = $('<a href="#"></a>');
-    var $imgBtmBorder = $('<span class="img_btm_border"></span>');
-    var $imgRightBorder = $('<span class="img_right_border"></span>');
-    var $imgBgGra = $('<span class="img_bg_gra"</span>');
-    var $eventTxt = $('<div class="event_txt"></div>');
-    var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
-    var $eventTxtAdr = $('<p class="event_txt_adr"></p>');
-    var $eventTxtDsc = $('<p class="event_txt_dsc"></p>');
-
-    $item.css('background-image',$('.visual_img > .item:first').css('background-image'));
-    $item.css('width',$('.visual_img > .item:first').css('width'));
-    $eventTxtTit.text($('.visual_img > .item:first > a > div > .event_txt_tit').text());
-    $eventTxtAdr.text($('.visual_img > .item:first > a > div > .event_txt_adr').text());
-    $eventTxtDsc.text($('.visual_img > .item:first > a > div > .event_txt_dsc').text());
-
-    $item.append($atag);
-    $atag.append($imgBtmBorder).append($imgRightBorder).append($imgBgGra).append($eventTxt);
-    $eventTxt.append($eventTxtTit).append($eventTxtAdr).append($eventTxtDsc);
-
-    //마지막에 맨 처음 태그 추가
-    $('.visual_img').append($item);
-
-    //맨 처음 페이지 왼쪽으로 이동
-    $('.visual_img > .item:first').animate({marginLeft:-width},{duration:500,complete:function(){
-      $(this).remove();
-    }});
-  }
-
-  function rollingBannerRight(){
-    var rollRoot = $('.visual_img').parents('.container_visual');
-    //너비설정
-    var width = $('.visual_img > .item').width();
-
-    var $item = $('<li class="item"></li>') //background-image, width 추가
-    var $atag = $('<a href="#"></a>');
-    var $imgBtmBorder = $('<span class="img_btm_border"></span>');
-    var $imgRightBorder = $('<span class="img_right_border"></span>');
-    var $imgBgGra = $('<span class="img_bg_gra"</span>');
-    var $eventTxt = $('<div class="event_txt"></div>');
-    var $eventTxtTit = $('<h4 class="event_txt_tit"></h4>');
-    var $eventTxtAdr = $('<p class="event_txt_adr"></p>');
-    var $eventTxtDsc = $('<p class="event_txt_dsc"></p>');
-
-    $item.css('background-image',$('.visual_img > .item:last').css('background-image'));
-    $item.css('width',$('.visual_img > .item:last').css('width'));
-    $item.css('margin-left',-1*width);
-    $eventTxtTit.text($('.visual_img > .item:last > a > div > .event_txt_tit').text());
-    $eventTxtAdr.text($('.visual_img > .item:last > a > div > .event_txt_adr').text());
-    $eventTxtDsc.text($('.visual_img > .item:last > a > div > .event_txt_dsc').text());
-
-    $item.append($atag);
-    $atag.append($imgBtmBorder).append($imgRightBorder).append($imgBgGra).append($eventTxt);
-    $eventTxt.append($eventTxtTit).append($eventTxtAdr).append($eventTxtDsc);
-
-    //마지막에 맨 처음 태그 추가
-    $('.visual_img').prepend($item);
-
-    //맨 처음 페이지 왼쪽으로 이동
-    $('.visual_img > .item:first').animate({marginLeft:0},{duration:500,complete:function(){
-
-      $('.visual_img > .item:last').remove();
-    }});
-  }
-
-  //Category list를 받아오는 함수
-  function getCategories(){
-    ajaxModule.setting('./categories/list','GET');
-    var res = ajaxModule.getAjax();
-
-    res.done(function(res, msg, satus){
-      //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
-      var template = Handlebars.compile(source3);
-      var html = template(res);
-      $('.section_event_tab').find('ul').append(html);
-      ajaxModule.cleanAjax();
-    });
-  }
-
-  //상품리스트 비우는 함수
-  function truncateProductList(){
-    var $first = $('.wrap_event_box > .lst_event_box:first-child');
-    var $second = $first.next();
-    $first.empty();
-    $second.empty();
-  }
-
-  $('.event_tab_lst').on('click','.item',function(event){
-    //1. Category Id를 가져온다.
-    event.stopPropagation();
-    var curId = $(this).data('category');
-
-    //2. anchor class 변환
-    //$('a[class="anchor active"]').attr('class','anchor');
-    var selectedAnchor = $(this).parents('.section_event_tab').find('.active');
-    var preId = selectedAnchor.parents('.item').data('category');
-    selectedAnchor.removeClass('active');
-
-    $(this).children('.anchor').addClass("active");
-
-    //3. 선택된 Category의 product를 하단에 받아와서 출력
-    if(curId !== preId){
-      truncateProductList();
-      if(curId === 0){
-        loadAllCategory();
-      } else {
-        loadOneCategory(curId);
-      }
+        //맨 처음 페이지 왼쪽으로 이동
+        $('.visual_img > li:first').animate({ marginLeft: -width }, {
+            duration: 500,
+            complete: function() {
+                $(this).remove();
+            }
+        });
     }
-  });
 
-  //Handlebars Id 설정
-  var source = $("#lst_event_box_first").html();
-  var source2 = $("#lst_event_box_second").html();
-  var source3 = $("#category_list").html();
+    function carouselToRight() {
+        var width = $('.visual_img > li:last').width();
+        var carouselLast = $('.visual_img > li:last').clone();
+        $(carouselLast).css('margin-left', -1 * width);
+        $('.visual_img').prepend(carouselLast);
 
-  function loadAllCategory(){
-    var offset = $('.wrap_event_box').find('li').length;
-    var limit = 10;
+        //맨 처음 페이지 왼쪽으로 이동
+        $('.visual_img > li:first').animate({ marginLeft: 0 }, {
+            duration: 500,
+            complete: function() {
+                $('.visual_img > li:last').remove();
+            }
+        });
+    }
 
-    var url = './api/productlist/'+limit+'/'+offset;
+    //Category list를 받아오는 함수
+    function getCategories() {
+        ajaxModule.setting('./categories/list', 'GET');
+        var result = ajaxModule.getAjax();
+        var categoryListSrc = $("#category_list").html();
 
+        result.done(function(res) {
+            //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
+            var categoryListTemplate = Handlebars.compile(categoryListSrc);
+            var categoryListHtml = categoryListTemplate(res);
+            $('.section_event_tab').find('ul').append(categoryListHtml);
+            ajaxModule.cleanAjax();
+        });
+    }
 
-    $.ajax({
-      url: './api/productlist/'+limit+'/'+offset,
-      method: 'GET',
-      success: function(response){
-
-
-        var template = Handlebars.compile(source);
-        var template2 = Handlebars.compile(source2);
-
-        var data1 = [];
-        var data2 = [];
-
-        for(var i=0; i<response.length;i++){
-          var img = response[i].saveFileName+response[i].fileName;
-
-          if(i%2 === 0){
-            data1.push({
-              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
-            });
-          } else{
-            data2.push({
-              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
-            })
-          }
+    //Module for productList    
+    var productModule = (function() {
+        var productLeftSrc = $("#lst_event_box_left").html();
+        var productRightSrc = $("#lst_event_box_right").html();
+        var productLeftTemplate = Handlebars.compile(productLeftSrc);
+        var productRightTemplate = Handlebars.compile(productRightSrc);
+        var productObj = {
+            leftItem: [],
+            rightItem: [],
+            leftHtml: null,
+            rightHtml: null
+        }
+        var option = {
+            offset: null,
+            limit: 10
         }
 
-        var html = template(data1);
-        var html2 = template(data2);
-        $('.wrap_event_box > .lst_event_box:first-child').append(html);
-        $('.wrap_event_box > .lst_event_box:first-child').next().append(html2);
-      }
-    });
-    //1
-  }
-
-  function loadOneCategory(categoryId){
-    var offset = $('.wrap_event_box').find('li').length;
-    var limit = 10;
-    $.ajax({
-      url: './api/productlist/'+limit+'/'+offset+'/'+categoryId,
-      method: 'GET',
-      success: function(response){
-        //2
-        var template = Handlebars.compile(source);
-        var template2 = Handlebars.compile(source2);
-
-        var data1 = [];
-        var data2 = [];
-
-        for(var i=0; i<response.length;i++){
-          var img = response[i].saveFileName+response[i].fileName;
-
-          if(i%2 === 0){
-            data1.push({
-              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
-            });
-          } else{
-            data2.push({
-              name:response[i].name, image:img, placeName:response[i].placeName, content:response[i].content
-            })
-          }
+        function resetProductObj() {
+            productObj.leftItem = [];
+            productObj.rightItem = [];
+            productObj.leftHtml = null;
+            productObj.rightHtml = null;
+        }
+        function templateToHtml() {
+            productObj.leftHtml = productLeftTemplate(productObj.leftItem);
+            productObj.rightHtml = productRightTemplate(productObj.rightItem);
         }
 
-        var html = template(data1);
-        var html2 = template(data2);
-        $('.wrap_event_box > .lst_event_box:first-child').append(html);
-        $('.wrap_event_box > .lst_event_box:first-child').next().append(html2);
-      }
-    })
-    //1
-  }
+        return {
+            setOffset: function() {
+                option.offset = $('.wrap_event_box').find('li').length;
+            },
+            getObject: function() {
+                return productObj;
+            },
+            getOption: function() {
+                return option;
+            },
+            cleanProduct: resetProductObj,
+            runCompile: templateToHtml
+        }
+    })();
 
-  function getProductCount(){
-    $.ajax({
-      url: './api/productlist/count/0',
-      method: 'GET',
-      success: function(response){
-        var str = response + "개";
-        $('.event_lst_txt > .pink').text(str);
-      }
-    })
-  }
+    //product전체 개수를 가져오는 함수
+    function getProductCount() {
+        ajaxModule.setting('./api/productlist/count/0', 'GET');
+        var result = ajaxModule.getAjax();
 
-  //더보기 버튼 클릭 시 동작
-  $('.more > .btn').on('click',function(){
-    var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
-
-    if(selectedId === 0){
-      loadAllCategory();
-    } else {
-      loadOneCategory(selectedId);
+        result.done(function(res) {
+            var str = res + "개";
+            $('.event_lst_txt > .pink').text(str);
+            ajaxModule.cleanAjax();
+        });
     }
-  });
 
-  //Scroll이 제일 하단으로 이동되는 경우 '더보기 버튼 없이' 상품 리스트 추가
-  $(window).scroll(function(){
-    if($(window).scrollTop() === $(document).height() - $(window).height()){
+    //전체 productList를 가져오는 함수
+    function getProducts() {
+        productModule.setOffset();
+        var temp = productModule.getOption();
+        var url = './api/productlist/' + temp.limit + '/' + temp.offset;
 
-      var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
-      if(selectedId === 0){
-        loadAllCategory();
-      } else {
-        loadOneCategory(selectedId);
-      }
+        ajaxModule.setting(url, 'GET');
+        var result = ajaxModule.getAjax();
+
+        result.done(function(res) {
+            //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
+            divideProduct(res);
+            productModule.runCompile();
+
+            $('.wrap_event_box > .lst_event_box:first').append(productModule.getObject().leftHtml);
+            $('.wrap_event_box > .lst_event_box:last').append(productModule.getObject().rightHtml);
+
+            productModule.cleanProduct();
+            ajaxModule.cleanAjax();
+        });
+
     }
-  });
+
+    //Category에 따라서 ProductList를 가져오는 함수
+    /*
+     *getProducts와 getProductByCategory를 전체인 경우에 url만 다르게 설정해서 함수를 합치도록 할 것
+     *
+     */
+    function getProductByCategory(categoryId) {
+        productModule.setOffset();
+        var temp = productModule.getOption();
+        var url = './api/productlist/' + temp.limit + '/' + temp.offset + '/' + categoryId;
+
+        ajaxModule.setting(url, 'GET');
+        var result = ajaxModule.getAjax();
+
+        result.done(function(res) {
+            divideProduct(res);
+            productModule.runCompile();
+
+            $('.wrap_event_box > .lst_event_box:first').append(productModule.getObject().leftHtml);
+            $('.wrap_event_box > .lst_event_box:last').append(productModule.getObject().rightHtml);
+
+            productModule.cleanProduct();
+            ajaxModule.cleanAjax();
+        });
+    }
+
+    //Rest API로 받아온 productList를 좌우 영역으로 나누는 function
+    function divideProduct(items) {
+        for (var i = 0; i < items.length; i++) {
+            var img = items[i].saveFileName + items[i].fileName;
+
+            if (i % 2 === 0) {
+                productModule.getObject().leftItem.push({
+                    name: items[i].name,
+                    image: img,
+                    placeName: items[i].placeName,
+                    content: items[i].content
+                });
+            } else {
+                productModule.getObject().rightItem.push({
+                    name: items[i].name,
+                    image: img,
+                    placeName: items[i].placeName,
+                    content: items[i].content
+                })
+            }
+        }
+    }
+
+    //상품리스트 비우는 함수
+    function truncateProductList() {
+        var $first = $('.wrap_event_box > .lst_event_box:first-child');
+        var $second = $first.next();
+        $first.empty();
+        $second.empty();
+    }
+
+    $('.event_tab_lst').on('click', '.item', function(event) {
+        //1. Category Id를 가져온다.
+        event.stopPropagation();
+        var curId = $(this).data('category');
+
+        //2. anchor class 변환
+        //$('a[class="anchor active"]').attr('class','anchor');
+        var selectedAnchor = $(this).parents('.section_event_tab').find('.active');
+        var preId = selectedAnchor.parents('.item').data('category');
+        selectedAnchor.removeClass('active');
+
+        $(this).children('.anchor').addClass("active");
+
+        //3. 선택된 Category의 product를 하단에 받아와서 출력
+        if (curId !== preId) {
+            truncateProductList();
+            if (curId === 0) {
+                getProducts();
+            } else {
+                getProductByCategory(curId);
+            }
+        }
+    });
+
+    //더보기 버튼 클릭 시 동작
+    $('.more > .btn').on('click', function() {
+        var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
+
+        if (selectedId === 0) {
+            getProducts();
+        } else {
+            getProductByCategory(selectedId);
+        }
+    });
+
+    //Scroll이 제일 하단으로 이동되는 경우 '더보기 버튼 없이' 상품 리스트 추가
+    $(window).scroll(function() {
+        if ($(window).scrollTop() === $(document).height() - $(window).height()) {
+
+            var selectedId = $('.section_event_tab').find('.active').parents('.item').data('category');
+            if (selectedId === 0) {
+                getProducts();
+            } else {
+                getProductByCategory(selectedId);
+            }
+        }
+    });
+
+    //ajax Request Module
+    var ajaxModule = (function() {
+        var aVar = {
+            ajaxUrl: null,
+            ajaxMethod: null,
+            ajaxDataType: null
+        }
+
+        function doAjax() {
+            return $.ajax({
+                url: aVar.ajaxUrl,
+                method: aVar.ajaxMethod,
+                dataType: aVar.ajaxDataType
+            });
+        }
+
+        function resetAjaxVar() {
+            for (var i in aVar) {
+                aVar[i] = null;
+            }
+        }
+
+        //module pattern에서 private value로 쓰이는 값을 반환하기 위해서
+        //public 영역에서 return 해주어야 한다.
+        return {
+            cleanAjax: resetAjaxVar,
+            setting: function(pUrl, pMethod, pDataType) {
+                aVar.ajaxUrl = pUrl;
+                aVar.ajaxMethod = pMethod;
+                aVar.ajaxDataType = pDataType;
+            },
+            getAjax: doAjax
+        }
+    })();
+
+    //document ready
+    $(document).ready(function() {
+        getCategories();
+        getProductCount();
+        getProducts();
+        timerModule.intervalSet();
+    });
 
 })(window);

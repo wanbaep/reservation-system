@@ -93,7 +93,7 @@ pageEncoding="UTF-8"%>
                 <div class="wrap_event_box">
                     <!-- [D] lst_event_box 가 2컬럼으로 좌우로 나뉨, 더보기를 클릭할때마다 좌우 ul에 li가 추가됨 -->
                     <ul class="lst_event_box">
-                        <script id="lst_event_box_first" type="text/x-handlebars-template">
+                        <script id="lst_event_box_left" type="text/x-handlebars-template">
                         {{#each this}}
                         <li class="item">
                             <a href="#" class="item_book">
@@ -108,7 +108,7 @@ pageEncoding="UTF-8"%>
                         </script>
                     </ul>
                     <ul class="lst_event_box">
-                        <script id="lst_event_box_second" type="text/x-handlebars-template">
+                        <script id="lst_event_box_right" type="text/x-handlebars-template">
                         {{#each this}}
                         <li class="item">
                             <a href="#" class="item_book">
