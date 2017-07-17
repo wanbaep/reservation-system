@@ -1,7 +1,8 @@
 package kr.or.connect.reservation.dao;
 
 public class ProductListSqls {
-	final static String SELECT_PRODUCT_LIST = "select P.name"
+	final static String SELECT_PRODUCT_LIST = "select P.id"
+			+ ", P.name"
 			+ ", DI.place_name"
 			+ ", PD.content"
 			+ ", F.file_name"
@@ -16,7 +17,8 @@ public class ProductListSqls {
 			+ "left outer join file as F "
 			+ "on PI.file_id = F.id "
 			+ "limit :limit offset :offset;";
-	final static String SELECT_PRODUCT_LIST_CAT = "select P.name"
+	final static String SELECT_PRODUCT_LIST_CAT = "select P.id"
+			+ ", P.name"
 			+ ", DI.place_name"
 			+ ", PD.content"
 			+ ", F.file_name"

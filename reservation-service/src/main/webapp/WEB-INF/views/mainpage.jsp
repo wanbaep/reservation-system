@@ -97,7 +97,7 @@ pageEncoding="UTF-8"%>
                         {{#each this}}
                         <li class="item">
                             <a href="#" class="item_book">
-                                <div class="item_preview"> <img alt="{{name}}" class="img_thumb" src="{{image}}">                                    <span class="img_border"></span> </div>
+                                <div class="item_preview" data-product="{{id}}"> <img alt="{{name}}" class="img_thumb" src="{{image}}">                                    <span class="img_border"></span> </div>
                                 <div class="event_txt">
                                     <h4 class="event_txt_tit"> <span>{{name}}</span> <small class="sm">{{placeName}}</small> </h4>
                                     <p class="event_txt_dsc">{{content}}</p>
@@ -112,7 +112,7 @@ pageEncoding="UTF-8"%>
                         {{#each this}}
                         <li class="item">
                             <a href="#" class="item_book">
-                                <div class="item_preview"> <img alt="{{name}}" class="img_thumb" src="{{image}}">                                    <span class="img_border"></span> </div>
+                                <div class="item_preview" data-product="{{id}}"> <img alt="{{name}}" class="img_thumb" src="{{image}}">                                    <span class="img_border"></span> </div>
                                 <div class="event_txt">
                                     <h4 class="event_txt_tit"> <span>{{name}}</span> <small class="sm">{{placeName}}</small> </h4>
                                     <p class="event_txt_dsc">{{content}}</p>
@@ -140,7 +140,7 @@ pageEncoding="UTF-8"%>
     </div>
 </footer>
 <script src="/resources/node_modules/jquery/dist/jquery.min.js"></script>
-
+<script src="/resources/js/custom.js"></script>
 <script src="/resources/js/main.js"></script>
 </body>
 </html>

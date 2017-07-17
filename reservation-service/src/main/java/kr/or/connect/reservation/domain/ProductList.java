@@ -1,6 +1,7 @@
 package kr.or.connect.reservation.domain;
 
 public class ProductList {
+	int id;
 	String name;
 	String placeName;
 	String content;
@@ -10,25 +11,37 @@ public class ProductList {
 	public ProductList(){
 		
 	}
+	public ProductList(int id){
+		this.id = id;
+	}
+	
 	public ProductList(String name){
 		this.name = name;
 	}
-	public ProductList(String name, String placeName){
+	public ProductList(int id, String name){
+		this.id = id;
+		this.name = name;
+	}
+	public ProductList(int id, String name, String placeName){
+		this.id = id;
 		this.name = name;
 		this.placeName = placeName;
 	}
-	public ProductList(String name, String placeName, String content){
+	public ProductList(int id, String name, String placeName, String content){
+		this.id = id;
 		this.name = name;
 		this.placeName = placeName;
 		this.content = content;
 	}
-	public ProductList(String name, String placeName, String content, String fileName){
+	public ProductList(int id, String name, String placeName, String content, String fileName){
+		this.id = id;
 		this.name = name;
 		this.placeName = placeName;
 		this.content = content;
 		this.fileName = fileName;
 	}
-	public ProductList(String name, String placeName, String content, String fileName, String saveFileName){
+	public ProductList(int id, String name, String placeName, String content, String fileName, String saveFileName){
+		this.id = id;
 		this.name = name;
 		this.placeName = placeName;
 		this.content = content;
@@ -36,7 +49,12 @@ public class ProductList {
 		this.saveFileName = saveFileName;
 	}
 	
-	
+	public int getId(){
+		return id;
+	}
+	public void setId(int id){
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}
