@@ -22,13 +22,13 @@ public class ProductDetailDao {
 		this.jdbc = new NamedParameterJdbcTemplate(dataSource);
 	}
 	
-	public ProductDetail selectProductDetailById(int id){
-		Map<String, ?> params = Collections.singletonMap("id", id);
+	public ProductDetail selectProductDetailById(int productId){
+		Map<String, ?> params = Collections.singletonMap("productId", productId);
 		return jdbc.queryForObject(ProductDetailSqls.SELECT_PRODUCT_DETAIL, params, rowMapper);
 	}
 	
-	public List<Integer> selectProductImageById(int id){
-		Map<String, ?> params = Collections.singletonMap("id", id);
+	public List<Integer> selectProductImageById(int productId){
+		Map<String, ?> params = Collections.singletonMap("productId", productId);
 		return jdbc.queryForList(ProductDetailSqls.SELECT_PRODUCT_IMAGE_FILE_ID, params, Integer.class);
 	}
 }

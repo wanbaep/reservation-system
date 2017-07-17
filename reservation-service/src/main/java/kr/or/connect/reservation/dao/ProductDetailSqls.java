@@ -16,12 +16,12 @@ public class ProductDetailSqls {
 			+ "	on P.id = PD.product_id"
 			+ " left outer join display_info as DI"
 			+ " on P.id = DI.product_id"
-			+ " where P.id = :id;";
+			+ " where P.id = :productId;";
 	final static String SELECT_PRODUCT_IMAGE_FILE_ID = "select F.id"
 			+ " from product as P"
 			+ " left outer join product_image as PI"
 			+ " on P.id = PI.product_id"
 			+ " left outer join file as F"
 			+ " on PI.file_id = F.id"
-			+ " where P.id = :id;";
+			+ " where P.id = :productId;";
 }

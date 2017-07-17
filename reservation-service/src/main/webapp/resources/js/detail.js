@@ -106,6 +106,59 @@ $("._close").on("click", function(){
 {{/each}}
 */
 
+var reviewModule = (function(){
+	/*var reviewList = $("#review_list").html();
+	var reviewListTemplate = Handlebars.compile(reviewList);
+
+*/
+})();
+
+function review(){
+	/*var reviewList = $("#review_list").html();
+	var reviewListTemplate = Handlebars.compile(reviewList);
+*/
+	var reviewObj = [];
+
+	ajaxModule.setting("/api/comment?productid=3&limit=3&offset=0", "GET");
+	var result = ajaxModule.getAjax();
+
+    result.done(function(res) {
+        
+        console.log(res);
+
+        for(var i = 0; i < res.length; i++){
+        	if(i > 0){
+        		if(reviewObj[i-1].userId === res[i].userId){
+        			reviewObj.push({
+	        			comment: res[i].comment,
+		        		createDate: res[i].createDate,
+		        		id: res[i].id,
+		        		productId : res[i].productId,
+		        		score: res[i].score,
+		        		userId: res[i].userId
+	        		});
+        		}
+        	} else{
+        		reviewObj.push({
+        			comment: res[i].comment,
+	        		createDate: res[i].createDate,
+	        		id: res[i].id,
+	        		productId : res[i].productId,
+	        		score: res[i].score,
+	        		userId: res[i].userId
+        		});
+        	}
+        	
+        }
+
+        console.log(reviewObj);
+
+        ajaxModule.cleanAjax();
+    });
+
+
+}
+
 $(".info_tab_lst").on("click","li",function(){
 	$(this).toggleClass("active");
 });
@@ -118,6 +171,8 @@ $(document).ready(function(){
 
 	var pathname = $(location).attr('pathname');
 	var productId = pathname.slice(-1);	//productId slice
+
+	review();
 });
 
 $(window).on("load",function(){
