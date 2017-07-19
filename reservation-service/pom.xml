@@ -165,6 +165,25 @@
             <artifactId>json-path</artifactId>
             <version>2.2.0</version>
         </dependency>
+        
+        <!-- Apach HttpClient -->
+        <dependency>
+        	<groupId>org.apache.httpcomponents</groupId>
+        	<artifactId>httpclient</artifactId>
+        	<version>4.5.2</version>
+        </dependency>
+        
+        <!-- file upload -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.4</version>
+        </dependency>
 	</dependencies>
 
 	<build>

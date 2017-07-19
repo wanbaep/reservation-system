@@ -4,6 +4,7 @@ public class ProductDetail {
 	int id;
 	String name;
 	String event;
+	String description;
 	String content;
 	String homepage;
 	String tel;
@@ -36,6 +37,12 @@ public class ProductDetail {
 	}
 	public void setEvent(String event) {
 		this.event = event;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public String getContent() {
 		return content;

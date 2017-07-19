@@ -5,8 +5,7 @@ public class ProductList {
 	String name;
 	String placeName;
 	String content;
-	String fileName;
-	String saveFileName;
+	String fileId;
 	
 	public ProductList(){
 		
@@ -33,20 +32,12 @@ public class ProductList {
 		this.placeName = placeName;
 		this.content = content;
 	}
-	public ProductList(int id, String name, String placeName, String content, String fileName){
+	public ProductList(int id, String name, String placeName, String content, String fileId){
 		this.id = id;
 		this.name = name;
 		this.placeName = placeName;
 		this.content = content;
-		this.fileName = fileName;
-	}
-	public ProductList(int id, String name, String placeName, String content, String fileName, String saveFileName){
-		this.id = id;
-		this.name = name;
-		this.placeName = placeName;
-		this.content = content;
-		this.fileName = fileName;
-		this.saveFileName = saveFileName;
+		this.fileId = fileId;
 	}
 	
 	public int getId(){
@@ -73,17 +64,11 @@ public class ProductList {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public String getFileName() {
-		return fileName;
+	public String getFileId() {
+		return fileId;
 	}
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-	public String getSaveFileName() {
-		return saveFileName;
-	}
-	public void setSaveFileName(String saveFileName) {
-		this.saveFileName = saveFileName;
+	public void setFileId(String fileId) {
+		this.fileId = fileId;
 	}
 	
 	

@@ -1,6 +1,5 @@
 package kr.or.connect.reservation.controller;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,25 +16,19 @@ import kr.or.connect.reservation.service.ProductDetailService;
 @RestController
 @RequestMapping("/api/product")
 public class ProductDetailController {
+	ProductDetailService service;
+	
 	@Autowired
-	ProductDetailService productDetailService;
-	
-	@GetMapping("/detail/{productId}")
-	public ProductDetail selectDetailByProductId(@PathVariable("productId") int productId){
-		return productDetailService.getDetailByProductId(productId);
-	}
-	
-	@GetMapping("/images/{productId}")
-	public Collection<Integer> selectImageIdByProductId(@PathVariable("productId") int productId){
-		return productDetailService.getImageIdByProductId(productId);
+	public ProductDetailController(ProductDetailService productDetailService) {
+		this.service = productDetailService;
 	}
 	
 	@GetMapping("/{productId}")
 	public Map<String, Object> testMethod(@PathVariable("productId") int productId){
 		Map<String, Object> result = new HashMap<String, Object>();
 		ProductDetail productDetail = new ProductDetail();
-		productDetail = productDetailService.getDetailByProductId(productId);
-		List<Integer> filesId = productDetailService.getImageIdByProductId(productId);
+		productDetail = service.getDetailByProductId(productId);
+		List<Integer> filesId = service.getImageIdByProductId(productId);
 		
 		//Map에 ProductDetail 정보와 Product의 image file들의 정보를 저장해서 반환
 		// Content-type이 application/json이기 때문에 자동으로 json으로 변환
@@ -45,4 +38,5 @@ public class ProductDetailController {
 		
 		return result;
 	}
+	
 }

@@ -36,53 +36,18 @@ public class UserCommentController {
 		result.put("userComment", userComment);
 		result.put("fileIdDto", fileIdDto);
 		
-		/*
-		 * {
-		 * 	userComment:[{
-		 * 			productId : 1,
-		 * 			userId : 2,
-		 * 			...
-		 * 			fileIdDto : [
-		 * 				{userId : 2, id : 2},
-		 * 				{userId : 2, id : 3}
-		 * 			]
-		 * -------------------------------
-		 * 			fileId : [2, 3] //best?
-		 * -------------------------------
-		 * 		},
-		 * 		{}
-		 * 	],
-		 * }
-		 * 이러한 구조로 만들고 싶은데 굳이 그럴 필요가 있을까 라는 생각도 든다.
-		*/
 		return result;
 	}
-	
-//	@GetMapping
-//	public List<UserComment> selectUserCommentByProductId(
-//			@RequestParam(name="productid") int productId, 
-//			@RequestParam(name="limit") int limit, 
-//			@RequestParam(name="offset") int offset){
-//		
-//		return userCommentService.getUserCommentByProductId(productId, limit, offset);
-//	}
-	
-	@GetMapping("/getall")
-	public List<FileIdDto> testMethod(
-			@RequestParam(name="productid") int productId,
-			@RequestParam(name="limit") int limit,
-			@RequestParam(name="offset") int offset){
 		
-		return userCommentService.getUserCommentFileId(productId, limit, offset);
-	}
-	
-	@GetMapping("/count/{id}")
-	public Integer selectUserCommentCount(@PathVariable("id")int id){
-		return userCommentService.getUserCommentCount(id);
-	}
-	
-	@GetMapping("/average/{id}")
-	public BigDecimal selectUserCommentAvg(@PathVariable("id")int id){
-		return userCommentService.getUserCommentAvg(id);
+	@GetMapping("/commoninfo/{productId}")
+	public Map<String,?> selectUserCommentCommonInfo(@PathVariable("productId") int productId){
+		Map<String, Object> result = new HashMap<String,Object>();
+		Integer commentCount = userCommentService.getUserCommentCount(productId);
+		BigDecimal commentAvgScore = userCommentService.getUserCommentAvg(productId);
+		
+		result.put("count", commentCount);
+		result.put("avgScore", commentAvgScore);
+		
+		return result;
 	}
 }

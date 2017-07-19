@@ -171,10 +171,10 @@ function getProducts() {
 
 //Rest API로 받아온 productList를 좌우 영역으로 나누는 function
 function divideProduct(items) {
-    console.log(items);
+    console.log("items %o",items);
     for (var i = 0; i < items.length; i++) {
-        var img = items[i].saveFileName + items[i].fileName;
-
+        var img = "/files/"+items[i].fileId;
+        
         if (i % 2 === 0) {
             productModule.getObject().leftItem.push({
                 id: items[i].id,
@@ -251,40 +251,7 @@ $(window).scroll(function() {
     }
 });
 
-//ajax Request Module
-var ajaxModule = (function() {
-    var aVar = {
-        ajaxUrl: null,
-        ajaxMethod: null,
-        ajaxDataType: null
-    }
 
-    function doAjax() {
-        return $.ajax({
-            url: aVar.ajaxUrl,
-            method: aVar.ajaxMethod,
-            dataType: aVar.ajaxDataType
-        });
-    }
-
-    function resetAjaxVar() {
-        for (var i in aVar) {
-            aVar[i] = null;
-        }
-    }
-
-    //module pattern에서 private value로 쓰이는 값을 반환하기 위해서
-    //public 영역에서 return 해주어야 한다.
-    return {
-        cleanAjax: resetAjaxVar,
-        setting: function(pUrl, pMethod, pDataType) {
-            aVar.ajaxUrl = pUrl;
-            aVar.ajaxMethod = pMethod;
-            aVar.ajaxDataType = pDataType;
-        },
-        getAjax: doAjax
-    }
-})();
 
 $(".wrap_event_box").on("click",".item_preview",function(e){
     var productId = $(this).data("product");

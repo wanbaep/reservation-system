@@ -4,6 +4,7 @@ public class ProductDetailSqls {
 	final static String SELECT_PRODUCT_DETAIL = "select P.id"
 			+ ", P.name"
 			+ ", P.event"
+			+ ", P.description"
 			+ ", PD.content"
 			+ ", DI.homepage"
 			+ ", DI.tel"
