@@ -8,6 +8,7 @@ pageEncoding="UTF-8"%>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
     <title>네이버 예약</title>
     <link href="/resources/css/style.css" rel="stylesheet">
+    <link href="/resources/css/popup.css" rel="stylesheet">
 </head>
 <body>
 	<script src="/resources/node_modules/handlebars/dist/handlebars.min.js"></script>
@@ -35,7 +36,7 @@ pageEncoding="UTF-8"%>
                         <div class="bg_pagination"></div>
                         <div class="figure_pagination">
                             <span class="num">1</span>
-                            <span class="num off">/ <span>3</span></span>
+                            <span class="num off">/ <span>10</span></span>
                         </div>
                     </div>
                     <div class="group_visual">
@@ -222,8 +223,8 @@ pageEncoding="UTF-8"%>
                             </div>
                             <!-- [D] 모바일 브라우저에서 접근 시 column2 추가와 btn_navigation 요소 추가 -->
                             <div class="bottom_common_path column2">
-                                <a href="#" class="btn_path"> <i class="fn fn-path-find2"></i> <span>길찾기</span> </a>
-                                <a hewf="#" class="btn_navigation before"> <i class="fn fn-navigation2"></i> <span>내비게이션</span> </a>
+                                <a href="//map.naver.com" class="btn_path"> <i class="fn fn-path-find2"></i> <span>길찾기</span> </a>
+                                <a hewf="//map.naver.com" class="btn_navigation before"> <i class="fn fn-navigation2"></i> <span>내비게이션</span> </a>
                             </div>
                             {{/this}}
                             </script>
@@ -242,7 +243,30 @@ pageEncoding="UTF-8"%>
             <span class="copyright">© NAVER Corp.</span>
         </div>
     </footer>
-    <div id="photoviwer"></div>
+    <div id="photoviwer">
+        <div class="dim-layer">
+            <div class="dimBg"></div>
+            <div class="pop-layer">
+            <div class="section_visual">
+                <div class="group_visual">
+                    <div>
+                        <div class="container_pop" style="width: 414px;">
+                            <ul class="visual_pop">
+                                <script id="popup_image" type="text/x-handlebars-template">
+                                {{#each this}}
+                                    <li class="item" style="width: 414px;"> 
+                                        <img alt="이미지" class="img_thumb" src="{{images}}">
+                                    </li>
+                                {{/each}}
+                                </script>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            </div>
+        </div>
+    </div>
     <script src="/resources/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/resources/js/custom.js"></script>
     <script src="/resources/js/detail.js"></script>

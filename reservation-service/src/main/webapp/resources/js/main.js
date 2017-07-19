@@ -132,6 +132,7 @@ function getProducts() {
 
     result.done(function(res) {
         //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
+        console.log(res);
         divideProduct(res);
         productModule.runCompile();
 
@@ -174,7 +175,7 @@ function divideProduct(items) {
     console.log("items %o",items);
     for (var i = 0; i < items.length; i++) {
         var img = "/files/"+items[i].fileId;
-        
+        console.log("items %o", items)
         if (i % 2 === 0) {
             productModule.getObject().leftItem.push({
                 id: items[i].id,

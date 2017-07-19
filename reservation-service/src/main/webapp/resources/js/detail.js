@@ -1,10 +1,18 @@
 
 
 var titleModule = (function(){
-	var totalImgCount = $(".visual_img li").length;
-	var currentElement = $(".figure_pagination span:first");
-	var currentImgOffset = currentElement.text();
+	var totalImgCount = 0;
+	var currentElement = '';
+	var currentImgOffset = 0;
 
+	function init(){
+		totalImgCount = $(".visual_img li").length;
+		currentElement = $(".figure_pagination span:first");
+		currentImgOffset = currentElement.text();
+		initDisplay();
+		setImgCount();
+		initEvent();
+	}
 	function rightBehavior(){
 		if(--currentImgOffset <= 0){
 			currentImgOffset = totalImgCount;
@@ -36,11 +44,9 @@ var titleModule = (function(){
 	}
 
 	return {
+		initAfterProuductDetailLoad : init,
 		moveRight: rightBehavior,
 		moveLeft: leftBehavior,
-		setImgCount: setImgCount,
-		initEvent: initEvent,
-		initDisplay: initDisplay
 	}
 })();
 
@@ -59,7 +65,7 @@ $("._close").on("click", function(){
 	$("._open").show();
 });
 
-//------------------ 예매하기 클릭 시
+//------- 예매하기 값 ---------
 // 1. 판매종료 & 매진
 //	 - 판매기간 종료, 매진
 // function(){
@@ -70,6 +76,9 @@ $("._close").on("click", function(){
 // 	}
 // }
 
+////////////////
+// touch area //
+////////////////
 var touch_start_y = 0;
 var touch_start_x = 0;
 var save_x = 0;
@@ -79,9 +88,6 @@ var move_dx = 0;
 function touchInit(e){
 	touch_start_x = e.touches[0].pageX;
 	touch_start_y = e.touches[0].pageY;
-	console.log(e.touches);
-	console.log("x: %o",touch_start_x);
-	console.log("y: %o",touch_start_y);
 }
 
 function touchService(e){
@@ -89,13 +95,10 @@ function touchService(e){
 	var scroll_dist = 0;
 	var width = $(this).width();
 
-	console.log("width %o", width);
 	//음수 양수에 따라서
 	drag_dist = e.touches[0].pageX - touch_start_x;
-	console.log("drag_dist : %o",drag_dist);
 	scroll_dist = e.touches[0].pageY - touch_start_y;
 	move_dx = (drag_dist/width) * 100;
-	console.log("move_dx: %o", move_dx);
 	if(Math.abs(drag_dist) > Math.abs(scroll_dist) && Math.abs(drag_dist) > (width>>1)){
 
 		//이동된 값만큼 animate
@@ -105,13 +108,12 @@ function touchService(e){
 function touchDestroy(e){
 	if(Math.abs(move_dx) > 40){
 		if(move_dx < 0)
-			carouselToLeft();
+			titleModule.moveLeft();
 		else
-			carouselToRight();
+			titleModule.moveRight();
 	} else{
-		//저장된 save_x 혹은 save_y만큼 이동했다가.. 돌아올것?
+		//저장된 save_x 혹은 save_y만큼 이동했다가 돌아올것
 	}
-	console.log("move_dx %o", move_dx);
 
 	touch_start_x = 0;
 	touch_start_y = 0;
@@ -122,14 +124,44 @@ function touchDestroy(e){
 	e.preventDefault();
 }
 
-$(".visual_img").bind("touchstart", touchInit);
-$(".visual_img").bind("touchmove", touchService);
-$(".visual_img").bind("touchend", touchDestroy);
+function titleTouchInit(){
+	$(".visual_img").bind("touchstart", touchInit);
+	$(".visual_img").bind("touchmove", touchService);
+	$(".visual_img").bind("touchend", touchDestroy);
+}
+
+function titleTouchDestroy(){
+	$(".visual_img").unbind("touchstart", touchInit);
+	$(".visual_img").unbind("touchmove", touchService);
+	$(".visual_img").unbind("touchend", touchDestroy);
+}
+
+function popupTouchInit(){
+	$(".visual_pop").bind("touchstart", touchInit);
+	$(".visual_pop").bind("touchmove", touchService);
+	$(".visual_pop").bind("touchend", touchDestroy);
+}
+
+function popupTouchDestroy(){
+	$(".visual_pop").unbind("touchstart", touchInit);
+	$(".visual_pop").unbind("touchmove", touchService);
+	$(".visual_pop").unbind("touchend", touchDestroy);
+}
 
 
 $(".info_tab_lst").on("click","li",function(){
 	$(this).toggleClass("active");
 });
+
+///////////////////////
+//Product Detail area//
+///////////////////////
+var productDetailSource = $("#product_detail").html();
+var productDetailTemplate = Handlebars.compile(productDetailSource);
+var storeLocationInfoSource = $("#store_location_info").html();
+var storeLocationInfoTemplate = Handlebars.compile(storeLocationInfoSource);
+var groupBtnSource = $("#group_btn").html();
+var groupBtnTemplate = Handlebars.compile(groupBtnSource);
 
 function getProductDetail(){
 	var pathname = $(location).attr('pathname');
@@ -142,24 +174,8 @@ function getProductDetail(){
 	}).done(function(res, status){
 		var name = res.productDetail.name;
 		var productDetail = [];
-
-		var productDetailSource = $("#product_detail").html();
-		var productDetailTemplate = Handlebars.compile(productDetailSource);
-		var storeLocationInfoSource = $("#store_location_info").html();
-		var storeLocationInfoTemplate = Handlebars.compile(storeLocationInfoSource);
-		var groupBtnSource = $("#group_btn").html();
-		var groupBtnTemplate = Handlebars.compile(groupBtnSource);
-
-		console.log("res %o", res);
-
-		placeLot = res.productDetail.placeLot;
-		//have to make image download url on server
-		var images = [];
-
-		for(var i = 0; i < res.images.length; i++){
-
-		}
-
+		// placeLot = res.productDetail.placeLot;
+		
 		for(var i = 0; i < res.images.length; i++){
 			var imageUrl = "/files/"+res.images[i];
 			productDetail[i] = {
@@ -172,11 +188,9 @@ function getProductDetail(){
 		var html = productDetailTemplate(productDetail);
 		$(".visual_img").append(html);
 
-		//---------------------------------------
 		//dsc 값 채워주기
 		$(".store_details .dsc").text(res.productDetail.description);
 
-		//---------------------------------------
 		//event정보가 있다면 값 채워주기
 		if(res.productDetail.event === null){
 			$(".section_event").hide();
@@ -188,20 +202,13 @@ function getProductDetail(){
 		$(".box_store_info").append(storeLocationInfoTemplate(res.productDetail));
 		$(".group_btn_goto").append(groupBtnTemplate(res.productDetail));
 
+		titleModule.initAfterProuductDetailLoad();
+
 	}).fail(function(jQueryXhr, status){
 
 	});
 }
-// to use handlebars
-// <div class="group_btn_goto">
-//     <script id="product_detail" type="text/x-handlebars-template">
-//     <a class="btn_goto_home" title="홈페이지" href="#" target="siteUrl"> <i class="fn fn-home1"></i> </a>
-//     <a class="btn_goto_tel" title="전화" href="#"> <i class="fn fn-call1"></i> </a>
-//     <a class="btn_goto_mail" title="이메일" href="#"> <i class="fn fn-mail1"></i> </a>
-//     <a href="#" class="btn_goto_path" title="길찾기"> <i class="fn fn-path-find1"></i> </a>
-//     <a href="#" class="fn fn-share1 naver-splugin btn_goto_share" title="공유하기"></a>
-//     </script>
-// </div>
+
 
 $(".info_tab_lst").on("click", ".anchor", function(e){
 	if($(this).closest("li").hasClass("_detail")){
@@ -223,28 +230,61 @@ $(".info_tab_lst").on("click", ".anchor", function(e){
 	}
 });
 
-//-------------------------------------------------
-//reservation_commnet
+//////////////////////////////
+//UserCommentCommonInfo area//
+//////////////////////////////
+var commonInfoSource = $("#comment_commoninfo").html();
+var commonInfoTemplate = Handlebars.compile(commonInfoSource);
+
+function getUserCommentCommonInfo(){
+	var pathname = $(location).attr('pathname');
+	var productId = pathname.slice(-1);
+
+	$.ajax({
+		url : "/api/comment/commoninfo/"+productId,
+		method : "GET",
+	}).done(function(res, status){
+		
+		var avgScoreFixed = res.avgScore.toFixed(1);
+		var percentScore = (avgScoreFixed/5.0) * 100;
+
+		result = {
+			count : res.count,
+			avgScore : avgScoreFixed,
+			percentScore : percentScore
+		};
+
+		$(".grade_area").append(commonInfoTemplate(result));
+
+	}).fail(function(jQueryXhr, status){
+
+	});
+
+}
+
+////////////////////////////
+//reservation_commnet area//
+////////////////////////////
+var commentSource = $("#comment_list").html();
+var commentTemplate = Handlebars.compile(commentSource);
+var result = [];
+
 function getComment(){
 	var limit = 3;
 	var offset = 0;
 	var pathname = $(location).attr('pathname');
 	var productId = pathname.slice(-1);
-	//http://localhost:8080/api/comment?productid=3&limit=3&offset=0
+
 	var url = "/api/comment?productid="+productId+"&limit="+limit+"&offset="+offset;
 
-	var commentSource = $("#comment_list").html();
-	var commentTemplate = Handlebars.compile(commentSource);
-	
 	$.ajax({
 		url : url,
 		method : "GET",
 	}).done(function(res,status){
-		console.log(res);
 		var fileId = res.fileIdDto;
 		var userComment = res.userComment;
 		
-		var result = [];
+		result = [];
 		var arr = [];
 
 		for(var i = 0; i<fileId.length;i++){
@@ -254,7 +294,6 @@ function getComment(){
 		for(var i = 0; i<fileId.length;i++){			
 			arr[fileId[i].userId].push(fileId[i].id);
 		}
-		console.log("arr %o", arr);
 		var img = '';
 		for(var i=0;i<userComment.length;i++){
 			if(arr[i] !== undefined){
@@ -282,53 +321,21 @@ function getComment(){
 }
 
 
-//-------------------------------------------------
-//예매 한줄평 평점, 전체 리뷰수
-function getUserCommentCommonInfo(){
-	var pathname = $(location).attr('pathname');
-	var productId = pathname.slice(-1);
-	$.ajax({
-		url : "/api/comment/commoninfo/"+productId,
-		method : "GET",
-	}).done(function(res, status){
-		var commonInfoSource = $("#comment_commoninfo").html();
-		var commonInfoTemplate = Handlebars.compile(commonInfoSource);
-		var avgScoreFixed = res.avgScore.toFixed(1);
-		var percentScore = (avgScoreFixed/5.0) * 100;
-
-		result = {
-			count : res.count,
-			avgScore : avgScoreFixed,
-			percentScore : percentScore
-		};
-
-		$(".grade_area").append(commonInfoTemplate(result));
-
-	}).fail(function(jQueryXhr, status){
-
-	});
-
-}
-
-//-------------------------------------------------
+////////////////////////////////////
 //naver map
 // 1. 주소 -> 좌표 api
 // 	- 좌표 get
 // 2. StaticMap api
 // 	- 지정된 좌표로 네이버 지도 이미지 출력
-//Client ID : AiZisW993TeCGaS7Wq87
-//Client secret : 3oLOkvQf_Q
-//address : 서울특별시 강남구 역삼동 825-11
-
+////////////////////////////////////
 function getStaticNaverMapImage(){
 	var temporalAddress = "서울특별시 노원구 월계동 411-3";//"서울특별시 강남구 역삼동 825-11";
 	var encodedAddress = encodeURI(temporalAddress);
-	console.log(encodedAddress);
+
 	$.ajax({
 		url : "/api/map/"+encodedAddress,
 		method : "GET",
 	}).done(function(res, status){
-		// console.log("%o, %o, %o",res, res.result.items[0].point.x, res.result.items[0].point.y);
 		
 		var commonInfoSource = $("#store_location").html();
 		var commonInfoTemplate = Handlebars.compile(commonInfoSource);
@@ -338,31 +345,91 @@ function getStaticNaverMapImage(){
 			y : res.location.items[0].point.y
 		}
 
-		console.log(res);
-		console.log(status);
 		$(".store_location").append(commonInfoTemplate(coordinate));
 	}).fail(function(jQueryXhr, status){
 
 	});
 }
 
-//-------------------------------------------------
-//layer popup
+////////////////
+//layer popup //
+////////////////
+// <div id="photoviwer">
+    
+//     <div class="container_visual" style="width: 414px;">
+//         <ul class="visual_img">
+//             <li class="item" style="width: 414px;"> 
+//                 <img alt="{{title}}" class="img_thumb" src="{{image}}"> <span class="img_bg"></span>
+//                 <div class="visual_txt">
+//                     <div class="visual_txt_inn">
+//                         <h2 class="visual_txt_tit"> <span>{{title}}</span> </h2>
+//                         <p class="visual_txt_dsc">{{dsc}}</p>
+//                     </div>
+//                 </div>
+//             </li>
+//         </ul>
+//     </div>
+    
+// </div>
 
+var popupSource = $("#popup_image").html();
+var popupTemplate = Handlebars.compile(popupSource);
+
+$(".list_short_review").on("click", ".thumb", function(e){
+	
+	titleTouchDestroy();
+	var commentId = $(this).closest('li').data('comment');
+
+	if(commentId !== undefined || commentId !== 0){
+		commentId -= 1;
+	}
+
+	console.log(result[commentId]);
+	var temp = result[commentId];
+	var arr = [];
+
+	for(var i = 0; i < temp.images.length; i++){
+		arr[i] = {
+			images : "/files/" + result[commentId].images[i]
+		}
+	}
+	
+	console.log(arr);
+	console.log("images %o", result[commentId].images);
+
+	// $(".pop-container").append(popupTemplate(arr))
+	$(".pop-layer .visual_pop").html(popupTemplate(arr));
+	$(".dim-layer").fadeIn();
+
+	
+	popupTouchInit();
+	// $('#popup_layer').css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + $(window).scrollTop()) + "px");
+
+});
+
+$('.layer .dimBg').click(function(){
+    // popupTouchDestroy();
+    $('.dim-layer').fadeOut();
+    // titleTouchInit();
+});
+
+$(document).mouseup(function(e){
+	console.log(e);
+	var $container = $(".pop-layer");
+	if($container.has(e.target).length === 0){
+		$('.dim-layer').fadeOut();
+	}
+});
 
 $(document).ready(function(){
-	//countImage();
 	getProductDetail();
-	getComment();
 	getUserCommentCommonInfo();
+	getComment();
 	getStaticNaverMapImage();
-	
-	titleModule.initDisplay();
-	titleModule.setImgCount();
-	titleModule.initEvent();
+
 });
 
 $(window).on("load",function(){
 	// image resource가 모두 load된 다음 동작 할 수 있게 window load에 위치
-	
+	titleTouchInit();
 });
