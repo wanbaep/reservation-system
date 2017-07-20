@@ -18,4 +18,18 @@ public class UserServiceImpl implements UserService {
 	public User getUserById(int id) {
 		return userDao.selectById(id);
 	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	public Integer insertUser(User user) {
+		Integer insert = userDao.insert(user);
+		user.setId(insert);
+		return insert;
+	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	public User getUserByEmail(String email) {
+		return userDao.selectUserByEmail(email);
+	}
 }

@@ -43,8 +43,8 @@ public class NaverMapApiController {
 			e1.printStackTrace();
 		}
 		String url = "https://openapi.naver.com/v1/map/geocode?encoding=utf-8&corrdType=latlng&query=" + encodedUrl;
-		String clientId = "AiZisW993TeCGaS7Wq87";
-		String clientSecret = "3oLOkvQf_Q";
+		String clientId = "0SU9kz8vk5Px8rf1NS4C";
+		String clientSecret = "qlPPE8k9Ls";
 		String registeredUrl = "http://localhost:8080";
 		
 		HttpClient client = HttpClientBuilder.create().build();

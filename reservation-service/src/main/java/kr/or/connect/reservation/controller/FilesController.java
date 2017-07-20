@@ -86,7 +86,7 @@ public class FilesController {
 
     @GetMapping(path="/{id}")
     public void downloadReservationUserCommentImage(
-            @PathVariable(name="id") int id,
+            @PathVariable(name="id") Integer id,
             HttpServletResponse response){
     	
     	Files file = service.getFilesById(id);

@@ -23,9 +23,15 @@ public class UserJdbcTest {
 	UserDao userDao;
 	
 	@Test
-	public void shouldSelect(){
-		User result = userDao.selectById(1);
+	public void shouldInsertAndSelectById(){
+		
+		User user = new User("사용자1", 0);
+		
+		Integer userPk = userDao.insert(user);
+		
+		User result = userDao.selectById(userPk);
 		
 		assertNotNull(result);
+		assertThat(user.getUsername(), is("사용자1"));
 	}
 }

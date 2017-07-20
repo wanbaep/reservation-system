@@ -1,9 +1,7 @@
 package kr.or.connect.reservation.domain;
 
-import java.util.Date;
-
 public class Files {
-	int id;
+	Integer id;
 	int userId;
 	String fileName;
 	String saveFileName;
@@ -36,10 +34,10 @@ public class Files {
 		this.modifyDate = modifyDate;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	public int getUserId() {

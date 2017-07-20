@@ -1,6 +1,6 @@
 package kr.or.connect.reservation.domain;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class User {
 	int id;
@@ -24,6 +24,10 @@ public class User {
 	public User(int id, String username){
 		this.id = id;
 		this.username = username;
+	}
+	public User(String username, int adminFlag){
+		this.username = username;
+		this.adminFlag = adminFlag;
 	}
 	public User(int id, String username, String email){
 		this.id = id;
