@@ -11,6 +11,7 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,10 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,17 +31,27 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kr.or.connect.reservation.domain.Category;
 import kr.or.connect.reservation.domain.User;
+import kr.or.connect.reservation.service.CategoryService;
 import kr.or.connect.reservation.service.UserService;
 
 @Controller
 @RequestMapping("/")
 public class MainController {
+	@Value("${naver.openapi.client-id}")
+	String clientId;// 애플리케이션 클라이언트 아이디값";
+	
+	@Value("${naver.openapi.client-secret}")
+	String clientSecret;// 애플리케이션 클라이언트 시크릿값";
+	
+	private final CategoryService categoryService;
 	private final UserService service;
 	
 	@Autowired
-	public MainController(UserService service) {
+	public MainController(UserService service, CategoryService categoryService) {
 		this.service = service;
+		this.categoryService = categoryService;
 	}
 
 	@GetMapping
@@ -51,7 +62,6 @@ public class MainController {
 		System.out.println("Session.wanbaepServer : " + session.getAttribute("wanbaepServer"));
 		String apiURL = null;
 
-		String clientId = "0SU9kz8vk5Px8rf1NS4C";// 애플리케이션 클라이언트 아이디값";
 		String redirectURI = null;
 		try {
 			redirectURI = URLEncoder.encode("http://127.0.0.1:8080/loginconfirm", "UTF-8");
@@ -73,8 +83,6 @@ public class MainController {
 
 	@GetMapping("/loginconfirm")
 	public String loginCallback(HttpServletRequest request) {
-		String clientId = "0SU9kz8vk5Px8rf1NS4C";// 애플리케이션 클라이언트 아이디값";
-		String clientSecret = "qlPPE8k9Ls";// 애플리케이션 클라이언트 시크릿값";
 		String code = request.getParameter("code");
 		String state = request.getParameter("state");
 		HttpSession session = request.getSession();
@@ -206,6 +214,15 @@ public class MainController {
 	@GetMapping("/reviewWrite")
 	public String reviewWritePage() {
 		return "reviewWrite";
+	}
+	
+	@GetMapping("/categories")
+	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		List<Category> categoryList = categoryService.getAll();
+		ModelAndView view = new ModelAndView("index");
+		view.addObject("category", categoryList);
+		
+		return view;
 	}
 	
 	public User makeUserByNaverUserInfo(HashMap<String, Object> naverUserMap){

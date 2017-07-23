@@ -61,16 +61,16 @@ $('.btn_nxt_e').on('click', timerModule.clickButton.bind(this,false));  //move t
 
 //Category list를 받아오는 함수
 function getCategories() {
-    ajaxModule.setting('./categories/list', 'GET');
-    var result = ajaxModule.getAjax();
     var categoryListSrc = $("#category_list").html();
 
-    result.done(function(res) {
+    $.ajax({
+        url : "/api/categories",
+        method : "GET",
+    }).done(function(res) {
         //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
         var categoryListTemplate = Handlebars.compile(categoryListSrc);
         var categoryListHtml = categoryListTemplate(res);
         $('.section_event_tab').find('ul').append(categoryListHtml);
-        ajaxModule.cleanAjax();
     });
 }
 
@@ -119,13 +119,12 @@ var productModule = (function() {
 
 //product전체 개수를 가져오는 함수
 function getProductCount() {
-    ajaxModule.setting('./api/productlist/count/0', 'GET');
-    var result = ajaxModule.getAjax();
-
-    result.done(function(res) {
+    $.ajax({
+        url : "./api/productlist/count/0",
+        method : "GET",
+    }).done(function(res) {
         var str = res + "개";
         $('.event_lst_txt > .pink').text(str);
-        ajaxModule.cleanAjax();
     });
 }
 
@@ -133,12 +132,12 @@ function getProductCount() {
 function getProducts() {
     productModule.setOffset();
     var temp = productModule.getOption();
-    var url = './api/productlist/' + temp.limit + '/' + temp.offset;
+    var url = './api/productlist?limit=' + temp.limit + '&offset=' + temp.offset + '&categoryId=0';
 
-    ajaxModule.setting(url, 'GET');
-    var result = ajaxModule.getAjax();
-
-    result.done(function(res) {
+    $.ajax({
+        url : url,
+        method : "GET",
+    }).done(function(res) {
         //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
         divideProduct(res);
         productModule.runCompile();
@@ -147,7 +146,6 @@ function getProducts() {
         $('.wrap_event_box > .lst_event_box:last').append(productModule.getObject().rightHtml);
 
         productModule.cleanProduct();
-        ajaxModule.cleanAjax();
     });
 
 }
@@ -160,12 +158,12 @@ function getProducts() {
  function getProductByCategory(categoryId) {
     productModule.setOffset();
     var temp = productModule.getOption();
-    var url = './api/productlist/' + temp.limit + '/' + temp.offset + '/' + categoryId;
+    var url = './api/productlist?limit=' + temp.limit + '&offset=' + temp.offset + '&categoryId=' + categoryId;
 
-    ajaxModule.setting(url, 'GET');
-    var result = ajaxModule.getAjax();
-
-    result.done(function(res) {
+    $.ajax({
+        url : url,
+        method : "GET",
+    }).done(function(res) {
         divideProduct(res);
         productModule.runCompile();
 
@@ -173,7 +171,6 @@ function getProducts() {
         $('.wrap_event_box > .lst_event_box:last').append(productModule.getObject().rightHtml);
 
         productModule.cleanProduct();
-        ajaxModule.cleanAjax();
     });
 }
 
@@ -273,7 +270,7 @@ $(".wrap_event_box").on("click",".item_preview",function(e){
 
 
 //document ready
-$(document).ready(function() {
+$(function() {
     getCategories();
     getProductCount();
     getProducts();

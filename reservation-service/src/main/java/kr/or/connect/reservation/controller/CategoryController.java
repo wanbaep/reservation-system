@@ -23,19 +23,24 @@ import kr.or.connect.reservation.domain.Category;
 import kr.or.connect.reservation.service.CategoryService;
 
 @RestController
-@RequestMapping("/admin/categories")
+@RequestMapping("/api/categories")
 public class CategoryController {
 	
 	@Autowired
 	private CategoryService categoryService;
 	
+//	@GetMapping
+//	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception{
+//		List<Category> categoryList = categoryService.getAll();
+//		ModelAndView view = new ModelAndView("index");
+//		view.addObject("category", categoryList);
+//		
+//		return view;
+//	}
+	
 	@GetMapping
-	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		List<Category> categoryList = categoryService.getAll();
-		ModelAndView view = new ModelAndView("index");
-		view.addObject("category", categoryList);
-		
-		return view;
+	public List<Category> selectAll(){
+		return categoryService.getAll();
 	}
 	
 	@PostMapping

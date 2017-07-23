@@ -30,7 +30,7 @@ public class SpringJdbcTest {
 		Category category = new Category("뮤지컬");
 		Integer categoryPk = categoryDao.insert(category);
 		
-		Category result = categoryDao.selectCatById(categoryPk);
+		Category result = categoryDao.selectCategoryById(categoryPk);
 		
 		assertThat(result.getName(), is("뮤지컬"));
 	}
@@ -40,7 +40,7 @@ public class SpringJdbcTest {
 		Category category = new Category("뮤지컬");
 		Integer categoryPk = categoryDao.insert(category);
 		
-		List<Category> resultList = categoryDao.selectCat();
+		List<Category> resultList = categoryDao.selectCategories();
 		assertNotNull(resultList);
 	}
 	
@@ -53,7 +53,7 @@ public class SpringJdbcTest {
 		category.setName("전시회");
 		int updateCount = categoryDao.update(category);
 		
-		Category result = categoryDao.selectCatById(categoryPk);
+		Category result = categoryDao.selectCategoryById(categoryPk);
 		assertThat(result.getName(), is("전시회"));
 	}
 	

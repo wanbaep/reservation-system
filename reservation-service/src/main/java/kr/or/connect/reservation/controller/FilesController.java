@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,9 @@ import kr.or.connect.reservation.service.FilesService;
 @Controller
 @RequestMapping("/files")
 public class FilesController {
-	private String baseDir = "D:" + File.separator + "image_reservation" + File.separator + "temp";
+	@Value("${file.stored.location}")
+	private String baseDir;
+	
 	FilesService service;
 
 	@Autowired

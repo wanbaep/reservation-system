@@ -1,5 +1,6 @@
 package kr.or.connect.reservation.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,9 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableWebMvc
 @ComponentScan(basePackages = {"kr.or.connect.reservation.controller"})
 public class ServletContextConfig extends WebMvcConfigurerAdapter {
+	@Value("${file.upload.maximum-size}")
+	private int fileMaximumSize;
+	
 	@Bean
 	public ViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
@@ -28,7 +32,7 @@ public class ServletContextConfig extends WebMvcConfigurerAdapter {
 	@Bean
     public MultipartResolver multipartResolver() {
         org.springframework.web.multipart.commons.CommonsMultipartResolver multipartResolver = new org.springframework.web.multipart.commons.CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(1024 * 1024 * 10);
+        multipartResolver.setMaxUploadSize(fileMaximumSize);
         return multipartResolver;
     }
 	

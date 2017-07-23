@@ -34,7 +34,7 @@ pageEncoding="UTF-8"%>
 
 <h2>카테고리 등록</h2>
 <hr>
-<form action="/admin/categories/" method="post">
+<form action="/api/categories/" method="post">
     <strong>등록 할 카테고리 명: </strong>
     <input type="text" name="name"/>
     <input type="submit" value="생성"/>

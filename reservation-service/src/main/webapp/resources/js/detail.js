@@ -59,8 +59,8 @@ var titleModule = (function(){
 	}
 	function decideButtonDisplay(){
 		if(totalImgCount <= 1){
-			$(".btn_nxt").css("display","none");
-			$(".btn_prev").css("display","none");
+			$(".btn_nxt").hide();
+			$(".btn_prev").hide();
 		}
 	}
 
@@ -444,18 +444,15 @@ $(document).mouseup(function(e){
 	}
 });
 
-$(document).ready(function(){
-
-	// $(".prev_inn").on("click", clickInstance.movePrev.bind(this,$(".visual_img")));
-	// $(".nxt_inn").on("click", clickInstance.moveNext.bind(this,$(".visual_img")));
+$(function(){
+	getDetailpageMainVisual();
+	getUserCommentCommonInfo();
+	getComment();
+	getStaticNaverMapImage();
 	
 });
 
 $(window).on("load",function(){
 	// image resource가 모두 load된 다음 동작 할 수 있게 window load에 위치
-	getDetailpageMainVisual();
-	getUserCommentCommonInfo();
-	getComment();
-	getStaticNaverMapImage();
 
 });

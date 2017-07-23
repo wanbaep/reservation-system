@@ -3,7 +3,7 @@
 	//perform an asynchronous HTTP (Ajax) request
 	function deleteCategory(id){
 		$.ajax({
-			url: './'+id,
+			url: '/api/categories'+id,
 			method: 'DELETE',
 			dataType:'json',
 		}).done(function(response, status){
@@ -19,7 +19,7 @@
 
 	//create form tag and submit
 	function updateCategory(id, updateValue){
-		var url = './'+id;
+		var url = '/api/categories'+id;
 		var form = $('<form></form>');
 		form.attr('action', url);
 		form.attr('method', 'POST');	//form method 중 post방식을 사용

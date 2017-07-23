@@ -17,15 +17,17 @@ import kr.or.connect.reservation.service.ProductListService;
 public class ProductListController {
 	@Autowired
 	ProductListService	productListService;
-	
-	@GetMapping("/{limit}/{offset}")
-	public Collection<ProductList> selectAll(@PathVariable("limit") int limit, @PathVariable("offset") int offset){
-		return productListService.getAll(limit, offset);
-	}
-	
-	@GetMapping("/{limit}/{offset}/{categoryId}")
-	public Collection<ProductList> selectByCategory(@PathVariable("limit") int limit, @PathVariable("offset") int offset, @PathVariable("categoryId") int categoryId){
-		return productListService.getAllByCategory(limit, offset, categoryId);
+		
+	@GetMapping
+	public Collection<ProductList> selectByCategory(
+			@RequestParam(name="categoryId") int categoryId, 
+			@RequestParam(name="limit") int limit, 
+			@RequestParam(name="offset") int offset){
+		if(categoryId == 0){
+			return productListService.getAll(limit, offset);
+		} else{
+			return productListService.getAllByCategory(limit, offset, categoryId);			
+		}
 	}
 	
 	@GetMapping("/count/{salesFlag}")
