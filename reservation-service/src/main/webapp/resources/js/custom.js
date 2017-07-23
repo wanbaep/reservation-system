@@ -1,31 +1,73 @@
-function carouselToLeft() {
-    var width = $('.visual_img > li:first').width();
-    var carouselFirst = $('.visual_img > li:first').clone();
-    $('.visual_img').append(carouselFirst);
+var carouselModule = (function(){
+    function init(){
+        var childWidth = 0;
+        var rootElement = null;
+        var defaultDuration = 500;
 
-    //맨 처음 페이지 왼쪽으로 이동
-    $('.visual_img > li:first').animate({ marginLeft: -width }, {
-        duration: 500,
-        complete: function() {
-            $(this).remove();
+        function ready(param){
+            console.log("ready %o", param.find("li:last"));
+            rootElement = param;
+            childWidth = rootElement.find("li:last").width();   //414
+            console.log("child width %o",rootElement.find("li:last").width());
+            var clonedChildElement = rootElement.find("li:last").clone();
+            rootElement.prepend(clonedChildElement);
+            rootElement.css({left:-childWidth});
+            console.log(rootElement, rootElement.width());
         }
-    });
-}
-
-function carouselToRight() {
-    var width = $('.visual_img > li:last').width();
-    var carouselLast = $('.visual_img > li:last').clone();
-    $(carouselLast).css('margin-left', -1 * width);
-    $('.visual_img').prepend(carouselLast);
-
-    //맨 처음 페이지 왼쪽으로 이동
-    $('.visual_img > li:first').animate({ marginLeft: 0 }, {
-        duration: 500,
-        complete: function() {
-            $('.visual_img > li:last').remove();
+        function duplicatedRootReady(param){
+            rootElement = param;
+            childWidth = rootElement.find("li:last").width();   //414
         }
-    });
-}
+        function movePrev(){
+            if(rootElement !== null){
+                rootElement.stop(true,true).animate({left:0},{
+                    duration : defaultDuration,
+                    complete : function(){
+                        rootElement.find("li:last").remove();
+                        var clonedChildElement = rootElement.find("li:last").clone();
+                        rootElement.prepend(clonedChildElement);
+                        rootElement.css({left:-childWidth});
+                    }
+                });
+            }
+        }
+        function moveNext(){
+            if(rootElement !== null){
+                rootElement.stop(true,true).animate({left:-childWidth*2},{
+                    duration : defaultDuration,
+                    complete : function(){
+                        rootElement.find("li:first").remove();
+                        var clonedChildElement = rootElement.find("li:first").clone();
+                        rootElement.append(clonedChildElement);
+                        rootElement.css({left:-childWidth});
+
+                    }
+                });
+            }
+        }
+        function getRootElement(){
+            return rootElement;
+        }
+        function getChildWidth(){
+            return childWidth;
+        }
+
+        return {
+            ready : ready,
+            movePrev : movePrev,
+            moveNext : moveNext,
+            getRootElement : getRootElement,
+            duplicatedRootReady : duplicatedRootReady,
+            getChildWidth : getChildWidth
+        };
+    }
+    return {
+        getInstance : function(){
+            return init();
+        }
+    }
+
+})();
 
 //ajax Request Module
 var ajaxModule = (function() {

@@ -1,42 +1,63 @@
-
-
 var titleModule = (function(){
 	var totalImgCount = 0;
 	var currentElement = '';
-	var currentImgOffset = 0;
+	var currentImgOffset = 1;
+	var clickInstance = null;
+	var initTouchModuleOption = 1;
 
 	function init(){
 		totalImgCount = $(".visual_img li").length;
 		currentElement = $(".figure_pagination span:first");
-		currentImgOffset = currentElement.text();
-		initDisplay();
-		setImgCount();
-		initEvent();
+		
+		decideButtonDisplay();
+		setTotalImgCount();
+		if(totalImgCount > 1){
+			initClickCarousel();
+			initTouchCarousel();
+		}
 	}
-	function rightBehavior(){
+	function initClickCarousel(){
+		clickInstance = carouselModule.getInstance();
+		clickInstance.ready($(".visual_img"));
+		$(".prev_inn").on("click", increaseCountByPrevClick);
+		$(".nxt_inn").on("click", increaseCountByNxtClick);
+	}
+	function initTouchCarousel(){
+		var initTouchModuleOption = 1;
+		touchModule.initTouchModule(initTouchModuleOption, carouselModule.getInstance(),$(".visual_img"));
+		$(".visual_img").bind("touchstart", touchModule.touchInit);
+		$(".visual_img").bind("touchmove", touchModule.touchService);
+		$(".visual_img").bind("touchend", controlCountByTouchEnd.bind(this));
+	}
+	function increaseCountByPrevClick(){
 		if(--currentImgOffset <= 0){
 			currentImgOffset = totalImgCount;
 		}
-		carouselToRight();
+		clickInstance.movePrev();
 		currentElement.text(currentImgOffset);
 	}
-	function leftBehavior(){
+	function increaseCountByNxtClick(){
 		if(++currentImgOffset > totalImgCount){
 			currentImgOffset = 1;
 		}
-		carouselToLeft();
+		clickInstance.moveNext();
 		currentElement.text(currentImgOffset);
 	}
-	function setImgCount(){
+	function controlCountByTouchEnd(event){
+		var direction = touchModule.touchEnd(event);
+		currentImgOffset += direction;
+
+		if(currentImgOffset <= 0){
+			currentImgOffset = totalImgCount;
+		} else if(currentImgOffset > totalImgCount){
+			currentImgOffset = 1;
+		}
+		currentElement.text(currentImgOffset);
+	}
+	function setTotalImgCount(){
 		$(".figure_pagination span:last").text(totalImgCount);
 	}
-	function initEvent(){
-		if(totalImgCount > 1){
-			$(".btn_nxt").on("click",titleModule.moveLeft);
-			$(".btn_prev").on("click",titleModule.moveRight);
-		}
-	}
-	function initDisplay(){
+	function decideButtonDisplay(){
 		if(totalImgCount <= 1){
 			$(".btn_nxt").css("display","none");
 			$(".btn_prev").css("display","none");
@@ -44,9 +65,7 @@ var titleModule = (function(){
 	}
 
 	return {
-		initAfterProuductDetailLoad : init,
-		moveRight: rightBehavior,
-		moveLeft: leftBehavior,
+		init : init,
 	}
 })();
 
@@ -79,74 +98,82 @@ $("._close").on("click", function(){
 ////////////////
 // touch area //
 ////////////////
-var touch_start_y = 0;
-var touch_start_x = 0;
-var save_x = 0;
-var save_y = 0;
-var move_dx = 0;
+var touchModule = (function(){
+	var carouselInstance = null;
+	var touchStartY = 0;
+	var touchStartX = 0;
+	var moveDistanceX = 0;
 
-function touchInit(e){
-	touch_start_x = e.touches[0].pageX;
-	touch_start_y = e.touches[0].pageY;
-}
-
-function touchService(e){
-	var drag_dist = 0;
-	var scroll_dist = 0;
-	var width = $(this).width();
-
-	//음수 양수에 따라서
-	drag_dist = e.touches[0].pageX - touch_start_x;
-	scroll_dist = e.touches[0].pageY - touch_start_y;
-	move_dx = (drag_dist/width) * 100;
-	if(Math.abs(drag_dist) > Math.abs(scroll_dist) && Math.abs(drag_dist) > (width>>1)){
-
-		//이동된 값만큼 animate
+	function initTouchModule(option, carousel, root){
+		carouselInstance = carousel;//carouselModule.getInstance();
+		if(option === 0){
+			carouselInstance.ready(root);
+		} else if(option === 1){
+			carouselInstance.duplicatedRootReady(root);
+		}
 	}
-}
-
-function touchDestroy(e){
-	if(Math.abs(move_dx) > 40){
-		if(move_dx < 0)
-			titleModule.moveLeft();
-		else
-			titleModule.moveRight();
-	} else{
-		//저장된 save_x 혹은 save_y만큼 이동했다가 돌아올것
+	function touchInit(e){
+		touchStartX = e.touches[0].pageX;
+		touchStartY = e.touches[0].pageY;
 	}
 
-	touch_start_x = 0;
-	touch_start_y = 0;
-	move_x = 0;
-	move_y =0;
-	move_dx = 0;
+	function touchService(e){
+		var dragDistance = 0;
+		var scrollDistance = 0;
+		var fakeMove = 0;
+		var width = carouselInstance.getChildWidth();
 
-	e.preventDefault();
-}
+		//음수 양수에 따라서
+		dragDistance = e.touches[0].pageX - touchStartX;
+		scrollDistance = e.touches[0].pageY - touchStartY;
+		moveDistanceX = (dragDistance/width) * 100;
 
-function titleTouchInit(){
-	$(".visual_img").bind("touchstart", touchInit);
-	$(".visual_img").bind("touchmove", touchService);
-	$(".visual_img").bind("touchend", touchDestroy);
-}
+		if(Math.abs(dragDistance) > width){
+			dragDistance = (dragDistance < 0) ? -width : width;
+		}
+		if(dragDistance > 0){
+			fakeMove = dragDistance - width;
+		} else{
+			fakeMove = dragDistance -width;
+		}
 
-function titleTouchDestroy(){
-	$(".visual_img").unbind("touchstart", touchInit);
-	$(".visual_img").unbind("touchmove", touchService);
-	$(".visual_img").unbind("touchend", touchDestroy);
-}
+		if(Math.abs(dragDistance) > Math.abs(scrollDistance)){
+			carouselInstance.getRootElement().stop(true,true).animate({left: fakeMove},500);
+		}
+	}
 
-function popupTouchInit(){
-	$(".visual_pop").bind("touchstart", touchInit);
-	$(".visual_pop").bind("touchmove", touchService);
-	$(".visual_pop").bind("touchend", touchDestroy);
-}
+	function touchEnd(e){
+		var width = carouselInstance.getChildWidth();
+		var direction = 0;
+		if(Math.abs(moveDistanceX) > 53){
+			if(moveDistanceX < 0){
+				carouselInstance.moveNext();
+				direction = 1;
+			}
+			else {
+				carouselInstance.movePrev();
+				direction = -1;
+			}
+		} else{
+			carouselInstance.getRootElement().stop(true,true).animate({left:-width},500);
+		}
 
-function popupTouchDestroy(){
-	$(".visual_pop").unbind("touchstart", touchInit);
-	$(".visual_pop").unbind("touchmove", touchService);
-	$(".visual_pop").unbind("touchend", touchDestroy);
-}
+		touchStartX = 0;
+		touchStartY = 0;
+		moveDistanceX = 0;
+		e.preventDefault();
+
+		return direction;
+	}
+
+	return {
+		initTouchModule : initTouchModule,
+		touchInit : touchInit,
+		touchService : touchService,
+		touchEnd : touchEnd
+	}
+
+})();
 
 
 $(".info_tab_lst").on("click","li",function(){
@@ -163,7 +190,7 @@ var storeLocationInfoTemplate = Handlebars.compile(storeLocationInfoSource);
 var groupBtnSource = $("#group_btn").html();
 var groupBtnTemplate = Handlebars.compile(groupBtnSource);
 
-function getProductDetail(){
+function getDetailpageMainVisual(){
 	var pathname = $(location).attr('pathname');
 	var productId = pathname.slice(-1);
 	var url = "/api/product/"+productId;
@@ -202,7 +229,7 @@ function getProductDetail(){
 		$(".box_store_info").append(storeLocationInfoTemplate(res.productDetail));
 		$(".group_btn_goto").append(groupBtnTemplate(res.productDetail));
 
-		titleModule.initAfterProuductDetailLoad();
+		titleModule.init();
 
 	}).fail(function(jQueryXhr, status){
 
@@ -377,7 +404,6 @@ var popupTemplate = Handlebars.compile(popupSource);
 
 $(".list_short_review").on("click", ".thumb", function(e){
 	
-	titleTouchDestroy();
 	var commentId = $(this).closest('li').data('comment');
 
 	if(commentId !== undefined || commentId !== 0){
@@ -402,15 +428,12 @@ $(".list_short_review").on("click", ".thumb", function(e){
 	$(".dim-layer").fadeIn();
 
 	
-	popupTouchInit();
 	// $('#popup_layer').css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + $(window).scrollTop()) + "px");
 
 });
 
 $('.layer .dimBg').click(function(){
-    // popupTouchDestroy();
     $('.dim-layer').fadeOut();
-    // titleTouchInit();
 });
 
 $(document).mouseup(function(e){
@@ -422,14 +445,17 @@ $(document).mouseup(function(e){
 });
 
 $(document).ready(function(){
-	getProductDetail();
-	getUserCommentCommonInfo();
-	getComment();
-	getStaticNaverMapImage();
 
+	// $(".prev_inn").on("click", clickInstance.movePrev.bind(this,$(".visual_img")));
+	// $(".nxt_inn").on("click", clickInstance.moveNext.bind(this,$(".visual_img")));
+	
 });
 
 $(window).on("load",function(){
 	// image resource가 모두 load된 다음 동작 할 수 있게 window load에 위치
-	titleTouchInit();
+	getDetailpageMainVisual();
+	getUserCommentCommonInfo();
+	getComment();
+	getStaticNaverMapImage();
+
 });

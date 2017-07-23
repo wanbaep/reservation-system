@@ -250,11 +250,11 @@ pageEncoding="UTF-8"%>
             <div class="section_visual">
                 <div class="group_visual">
                     <div>
-                        <div class="container_pop" style="width: 414px;">
+                        <div class="container_pop" style="width: 374px;">
                             <ul class="visual_pop">
                                 <script id="popup_image" type="text/x-handlebars-template">
                                 {{#each this}}
-                                    <li class="item" style="width: 414px;"> 
+                                    <li class="item" style="width: 374px;"> 
                                         <img alt="이미지" class="img_thumb" src="{{images}}">
                                     </li>
                                 {{/each}}
