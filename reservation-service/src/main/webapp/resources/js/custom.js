@@ -5,14 +5,12 @@ var carouselModule = (function(){
         var defaultDuration = 500;
 
         function ready(param){
-            console.log("ready %o", param.find("li:last"));
             rootElement = param;
             childWidth = rootElement.find("li:last").width();   //414
-            console.log("child width %o",rootElement.find("li:last").width());
+
             var clonedChildElement = rootElement.find("li:last").clone();
             rootElement.prepend(clonedChildElement);
             rootElement.css({left:-childWidth});
-            console.log(rootElement, rootElement.width());
         }
         function duplicatedRootReady(param){
             rootElement = param;

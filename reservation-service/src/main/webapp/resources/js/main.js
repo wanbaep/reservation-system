@@ -2,12 +2,19 @@
 //Timer Module for carousel
 var timerModule = (function() {
     // privates scope
+    var carouselInstance = null;
     var carouselInterval = null;
     var carouselTimer = null;
     var delayTime = 2000;
 
+    function initTimerModule(){
+        console.log("init");
+        carouselInstance = carouselModule.getInstance();
+        carouselInstance.ready($(".visual_img"));
+    }
+
     function startInterval() {
-        carouselInterval = setInterval(carouselToLeft, delayTime);
+        carouselInterval = setInterval(carouselInstance.moveNext, delayTime);
     }
     function stopInterval() {
         if (carouselInterval != null) {
@@ -32,12 +39,13 @@ var timerModule = (function() {
             stopTimer();
             startTimer();
         },
+        initTimerModule : initTimerModule,
         intervalSet: startInterval,
         clickButton: function(whichButton){
             stopInterval();
             stopTimer();
             //If whichButton 'true' then left and 'false' then right
-            whichButton ? carouselToLeft() : carouselToRight();
+            whichButton ? carouselInstance.movePrev() : carouselInstance.moveNext();
             startInterval();
         }
     };
@@ -132,7 +140,6 @@ function getProducts() {
 
     result.done(function(res) {
         //응답이 잘못된 경우 해당 영역은 실행되지 않는다.
-        console.log(res);
         divideProduct(res);
         productModule.runCompile();
 
@@ -172,10 +179,8 @@ function getProducts() {
 
 //Rest API로 받아온 productList를 좌우 영역으로 나누는 function
 function divideProduct(items) {
-    console.log("items %o",items);
     for (var i = 0; i < items.length; i++) {
         var img = "/files/"+items[i].fileId;
-        console.log("items %o", items)
         if (i % 2 === 0) {
             productModule.getObject().leftItem.push({
                 id: items[i].id,
@@ -257,7 +262,6 @@ $(window).scroll(function() {
 $(".wrap_event_box").on("click",".item_preview",function(e){
     var productId = $(this).data("product");
     var url = "./detail/" + productId;
-    console.log(url);
 
     //redirect to product page
     //similar behavior as clicking on a link
@@ -276,5 +280,6 @@ $(document).ready(function() {
 });
 
 $(window).on("load",function(){
+    timerModule.initTimerModule();
     timerModule.intervalSet();
 });
