@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -35,16 +36,23 @@ public class CategoryDao {
 		return insertAction.executeAndReturnKey(params).intValue();
 	}
 	
-	public Category selectCatById(int id){
-		Map<String, Object> params = new HashMap<>();
-		params.put("id", id);
-		return jdbc.queryForObject(CategorySqls.SELECT_CAT_BY_ID, params, rowMapper);
+	public Category selectCategoryById(int id){
+		try {
+			Map<String, Object> params = new HashMap<>();
+			params.put("id", id);
+			return jdbc.queryForObject(CategorySqls.SELECT_CAT_BY_ID, params, rowMapper);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+		
 	}
 	
-	public List<Category> selectCat(){
-		/*Map<String, Object> params = Collections.emptyMap();
-		return jdbc.query(CategorySqls.SELECT_CAT, params, rowMapper);*/
-		return jdbc.query(CategorySqls.SELECT_CAT, rowMapper);
+	public List<Category> selectCategories(){
+		try {
+			return jdbc.query(CategorySqls.SELECT_CAT, rowMapper);			
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	public int update(Category category){

@@ -3,31 +3,29 @@
 	//perform an asynchronous HTTP (Ajax) request
 	function deleteCategory(id){
 		$.ajax({
-			url: './categories/delete/'+id,
+			url: './'+id,
 			method: 'DELETE',
-			headers: { 'Content-Type':'application/json'},
 			dataType:'json',
-			success: function(response){
-				var delete_id="#"+id;
-				$(delete_id).remove();
-
-				alert("카테고리를 삭제 했습니다.");
-			},
-			error: function(e){
-				alert("카테고리 삭제를 실패했습니다. \n\n HTTP Status Code: "+e.status);
-			}
-		})
+		}).done(function(response, status){
+			var delete_id="#"+id;
+			$(delete_id).remove();
+			console.log(response, status);
+			alert("카테고리를 삭제 했습니다.");
+		}).fail(function(jQueryXhr, status){
+			console.log(jQueryXhr, status);
+			alert("카테고리 삭제를 실패했습니다. \n\n HTTP Status Code: "+ status);
+		});
 	}
 
 	//create form tag and submit
-	function updateCategory(id, update_value){
-		var url = './categories/update/'+id;
+	function updateCategory(id, updateValue){
+		var url = './'+id;
 		var form = $('<form></form>');
 		form.attr('action', url);
 		form.attr('method', 'POST');	//form method 중 post방식을 사용
 		form.appendTo('body');
 
-		var str = '<input name="uvalue" type="hidden" value="' + update_value.val() +'"/>';
+		var str = '<input name="uvalue" type="hidden" value="' + updateValue.val() +'"/>';
 		var input = $(str);
 
 		form.append(input);
@@ -43,24 +41,24 @@
 	//update event handler function
 	$('.category-list').on('click','.update',function(){
 		var id = $(this).parents('.category').attr('id');
-		var update_value = $(this).siblings('#update_val');
-		var present_value = $(this).parents('td').siblings('#cat').html();
+		var updateValue = $('#update_val');
+		var presentValue = $('#cat').html();
 
-		if(update_value.val()==""){
+		if(updateValue.val()==""){
 			alert("수정할 카테고리 명을 확인해 주세요!");
-			update_value.val("");
+			updateValue.val("");
 			return ;
 		}
 
-		if(present_value == update_value.val()){
+		if(presentValue == updateValue.val()){
 			alert("현재 카테고리 명과 일치합니다!");
-			update_value.val("");
+			updateValue.val("");
 			return ;
 		}
 
 		//call update Category function
-		updateCategory(id, update_value);
-		update_value.val("");
+		updateCategory(id, updateValue);
+		updateValue.val("");
 		alert("카테고리 명이 수정되었습니다.");
 	});
 

@@ -34,14 +34,14 @@ pageEncoding="UTF-8"%>
 
 <h2>카테고리 등록</h2>
 <hr>
-<form action="/categories/insert" method="post">
+<form action="/admin/categories/" method="post">
     <strong>등록 할 카테고리 명: </strong>
     <input type="text" name="name"/>
     <input type="submit" value="생성"/>
 </form>
 
-<script src="/resources/js/jquery-3.2.1.min.js"></script>
-<script src="/resources/js/app.js"></script>
+<script src="/resources/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="/resources/js/admin.js"></script>
 
 </body>
 </html>

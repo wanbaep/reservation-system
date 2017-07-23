@@ -18,7 +18,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	@Transactional(readOnly = true)
 	public Category get(Integer id) {
-		return categoryDao.selectCatById(id);
+		return categoryDao.selectCategoryById(id);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Category> getAll() {
-		return categoryDao.selectCat();
+		return categoryDao.selectCategories();
 	}
 	
 	
