@@ -1,6 +1,6 @@
 package kr.or.connect.reservation.domain;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class ProductDisplayDto {
 	Integer id;

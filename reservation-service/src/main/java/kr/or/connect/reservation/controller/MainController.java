@@ -60,6 +60,7 @@ public class MainController {
 		HttpSession session = request.getSession();
 		System.out.println("Session : " + session);
 		System.out.println("Session.wanbaepServer : " + session.getAttribute("wanbaepServer"));
+		System.out.println("client-id : " + clientId + "client-secret : " + clientSecret);
 		String apiURL = null;
 
 		String redirectURI = null;
@@ -202,8 +203,10 @@ public class MainController {
 
 	// just register controller for every page
 	@GetMapping("/reserve/{id}")
-	public String reservePage(@PathVariable("id") int productId) {
-		return "reserve";
+	public ModelAndView reservePage(@PathVariable("id") int productId) {
+		ModelAndView view = new ModelAndView("reserve");
+		
+		return view;
 	}
 
 	@GetMapping("/review")

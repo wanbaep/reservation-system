@@ -29,5 +29,5 @@ public class ReserveSqls {
 			+ " from product as P"
 			+ " inner join product_price as PP"
 			+ " on P.id = PP.product_id"
-			+ " where P.id = :productId";
+			+ " where P.id = :productId order by PP.price asc";
 }

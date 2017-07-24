@@ -199,6 +199,7 @@ function getDetailpageMainVisual(){
 		url : url,
 		method : "GET",
 	}).done(function(res, status){
+		_productId = res.productDetail.id;
 		var name = res.productDetail.name;
 		var productDetail = [];
 		// placeLot = res.productDetail.placeLot;
@@ -450,11 +451,10 @@ $(function(){
 	getComment();
 	getStaticNaverMapImage();
 	
-
 	//예매하기 버튼
 	$(".section_btn").on("click",function(e){
-		var currentUrl = location.href;
-		var productId = currentUrl.slice(-1);
+		var pathname = $(location).attr('pathname');
+		var productId = pathname.slice(-1);
 	    var url = "/reserve/" + productId;
 	    window.location.href=url;
 	});
