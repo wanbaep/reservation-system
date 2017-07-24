@@ -196,13 +196,13 @@ public class MainController {
 	}
 
 	@GetMapping("/detail/{id}")
-	public String detailPage(@PathVariable("id") int categoryId) {
+	public String detailPage(@PathVariable("id") int productId) {
 		return "detail";
 	}
 
 	// just register controller for every page
-	@GetMapping("/reserve")
-	public String reservePage() {
+	@GetMapping("/reserve/{id}")
+	public String reservePage(@PathVariable("id") int productId) {
 		return "reserve";
 	}
 

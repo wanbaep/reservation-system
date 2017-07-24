@@ -450,6 +450,15 @@ $(function(){
 	getComment();
 	getStaticNaverMapImage();
 	
+
+	//예매하기 버튼
+	$(".section_btn").on("click",function(e){
+		var currentUrl = location.href;
+		var productId = currentUrl.slice(-1);
+	    var url = "/reserve/" + productId;
+	    window.location.href=url;
+	});
+
 });
 
 $(window).on("load",function(){
